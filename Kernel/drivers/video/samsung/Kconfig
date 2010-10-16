@@ -87,6 +87,13 @@ config FB_S3C_TL2796
         ---help---
           This enables support for Samsung TL2796 WVGA LCD panel
 
+config VOODOO_COLOR_GAMMA_22_ONLY
+	bool "Voodoo color: improve gamma in videos"
+	depends on FB_S3C_TL2796
+	default y
+	---help---
+	  This enables Voodoo color gamma curve optimization in videos
+
 config FB_S3C_HT101HD1
 	bool "HT101HD1"
 	depends on MACH_SMDKV210
@@ -117,18 +124,18 @@ config FB_S3C_MDNIE_TUNINGMODE_FOR_BACKLIGHT
 		  This option enables to control mDNIe tuning for backlights.
 
 config VOODOO_MDNIE
-	bool "Voodoo mDNIe sharpness and color enhancements"
+	bool "Voodoo color: mDNIe sharpness and color enhancements"
 	depends on FB_S3C_MDNIE
 	default y
 	---help---
-	  This enables Voodoo mDNIe tweaks
+	  This enables Voodoo color mDNIe tweaks
 
 config VOODOO_MDNIE_VIDEOS_ALT_PRESETS
-	bool "Replace Warm & Cold Video presets by Boost and Soft"
+	bool "Also replace Warm & Cold Video presets by Boost and Soft"
 	depends on VOODOO_MDNIE
 	default y
 	---help---
-	  This enables Voodoo mDNIe useful alternative presets used by Samsung video player
+	  This enables Voodoo color mDNIe useful alternative presets used by Samsung video player
 
 config FB_S3C_LVDS
 	bool "LVDS"
