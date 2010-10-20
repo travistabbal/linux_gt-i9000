@@ -1,3 +1,12 @@
+Voodoo additions:
+
+Voodoo come with a custom defconfig, you can do:
+make aries_eur_voodoo_all_defconfig
+
+
+Now the original Samsung README:
+________________________________
+
 HOW TO BUILD KERNEL 2.6.32 FOR GT-I9000
 
 1. Visit http://www.codesourcery.com/, download and install Sourcery G++ Lite 2009q3-68 toolchain for ARM EABI.
