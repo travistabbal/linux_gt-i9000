@@ -8,7 +8,7 @@ case "$1" in
 		echo "* Clean Kernel                                                                 *"
 		echo "********************************************************************************"
 
-		pushd linux-2.6.29
+		pushd Kernel
 		make clean
 		popd
 		pushd modules
@@ -27,10 +27,10 @@ if [ "$CPU_JOB_NUM" = "" ] ; then
 	CPU_JOB_NUM=8
 fi
 
-TOOLCHAIN=`pwd`/../arm-2009q3/bin/
-TOOLCHAIN_PREFIX=arm-none-eabi-
+TOOLCHAIN=/home/curio/x-tools/arm-voodoo-linux-gnueabi/bin
+TOOLCHAIN_PREFIX=arm-voodoo-linux-gnueabi-
 
-KERNEL_BUILD_DIR=linux-2.6.29
+KERNEL_BUILD_DIR=Kernel
 
 export PRJROOT=$PWD
 export PROJECT_NAME
@@ -72,7 +72,7 @@ BUILD_KERNEL()
 
 	export KDIR=`pwd`
 
-	make ARCH=arm $PROJECT_NAME"_rev"$HW_BOARD_REV"_defconfig"
+#	make ARCH=arm $PROJECT_NAME"_rev"$HW_BOARD_REV"_defconfig"
 
 	# make kernel
 	make -j$CPU_JOB_NUM HOSTCFLAGS="-g -O2" ARCH=arm CROSS_COMPILE=$TOOLCHAIN/$TOOLCHAIN_PREFIX
@@ -123,3 +123,5 @@ END_TIME=`date +%s`
 let "ELAPSED_TIME=$END_TIME-$START_TIME"
 echo "Total compile time is $ELAPSED_TIME seconds"
 
+cp Kernel/arch/arm/boot/zImage .
+tar cvf custom.tar zImage
