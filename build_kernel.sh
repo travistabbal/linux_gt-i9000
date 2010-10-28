@@ -78,8 +78,7 @@ BUILD_KERNEL()
 	make -j$CPU_JOB_NUM HOSTCFLAGS="-g -O2" ARCH=arm CROSS_COMPILE=$TOOLCHAIN/$TOOLCHAIN_PREFIX
 
 	popd
-	
-	BUILD_MODULE
+	test "$1" = "modules" && BUILD_MODULE
 }
 
 # print title
@@ -118,7 +117,7 @@ START_TIME=`date +%s`
 
 PRINT_TITLE
 
-BUILD_KERNEL
+BUILD_KERNEL $1
 END_TIME=`date +%s`
 let "ELAPSED_TIME=$END_TIME-$START_TIME"
 echo "Total compile time is $ELAPSED_TIME seconds"
