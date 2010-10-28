@@ -26,6 +26,96 @@ config SND_S3C24XX_SOC_NEO1973_WM8753
 	  Say Y if you want to add support for SoC audio on smdk2440
 	  with the WM8753.
 
+config SND_S3C24XX_SOC_NEO1973_GTA02_WM8753
+	tristate "Audio support for the Openmoko Neo FreeRunner (GTA02)"
+	depends on SND_S3C24XX_SOC && MACH_NEO1973_GTA02
+	select SND_S3C24XX_SOC_I2S
+	select SND_SOC_WM8753
+	help
+	  This driver provides audio support for the Openmoko Neo FreeRunner
+	  smartphone.
+	  
+config SND_S3C24XX_SOC_JIVE_WM8750
+	tristate "SoC I2S Audio support for Jive"
+	depends on SND_S3C24XX_SOC && MACH_JIVE
+	select SND_SOC_WM8750
+	select SND_S3C2412_SOC_I2S
+	help
+	  Sat Y if you want to add support for SoC audio on the Jive.
+
+config  SND_ARIES_WM8994
+	tristate "SoC I2S Audio support for WM8994-I2S on UNIVERSAL"
+	depends on SND_S3C24XX_SOC && (MACH_S5PC110_ARIES || MACH_S5PC110_P1)
+	select SND_ARIES_SOC_WM8994 if (MACH_S5PC110_ARIES || MACH_S5PC110_P1)
+	select SND_SOC_WM8994
+	select SND_S3C64XX_SOC_I2S 
+
+config	SND_ARIES_WM8994_MASTER
+	bool "WM8994 master"
+	depends on SND_ARIES_SOC_WM8994
+	default n
+	help
+	  Say Y if you want to run SoC as I2S-Slave and CODEC as I2S-Master.
+
+config	SND_VOODOO_SOUND
+	bool "Voodoo sound"
+	depends on SND_SOC_WM8994
+	default y
+	help
+	  Say Y if you want to activate Voodoo sound extensions
+	  like the headphone amp gain hardware control
+
+config	SND_VOODOO_SOUND_HEADPHONE_AMP_GAIN
+	bool "Headphone amp gain control"
+	depends on SND_VOODOO_SOUND
+	default y
+	help
+	  Say Y if you want to activate control of the headphone gain through
+	  the sysfs interface
+
+config	SND_VOODOO_SOUND_RETUNE_EQ
+	bool "ReTune parametric hardware equalizer"
+	depends on SND_VOODOO_SOUND
+	default y
+	help
+	  Say Y if you want to activate Wolfson ReTune paremetric hardware
+	  equalizer controls
+
+config	SND_VOODOO_SOUND_WM8994_REGISTER_DUMP
+	bool "Expose the wm8994_register_dump function"
+	depends on SND_VOODOO_SOUND
+	default n
+	help
+	  Say Y if you want to be able to dump WM8994 codec's registers
+	  to dmesg
+
+config	SND_VOODOO_SOUND_WM8994_WRITE
+	bool "Expose the wm8994_write function"
+	depends on SND_VOODOO_SOUND
+	default n
+	help
+	  Say Y if you want to be able to send abritrary commands to the
+	  WM8994 sound codec through the sysfs interface
+	  This option is dangerous and should be used only carefuly after
+	  some serious specsheet reading.
+
+config SND_SMDK_WM8580
+	tristate "SoC I2S Audio support for WM8580 on SMDK"
+	depends on SND_S3C24XX_SOC && (MACH_SMDK6400 || MACH_SMDK6410 || MACH_SMDKV210 || MACH_SMDKC110)
+	select SND_S3C64XX_SOC_WM8580 if (MACH_SMDK6410 || MACH_SMDK6400)
+	select SND_S5PV2XX_SOC_WM8580 if (MACH_SMDKV210 || MACH_SMDKC110)
+	select SND_SOC_WM8580
+	select SND_S3C64XX_SOC_I2S
+	help
+	  Sat Y if you want to add support for SoC audio on the SMDK with WM8580 codec.
+
+config  WM8580_MASTER
+	bool "WM8580 Codec is I2S Master"
+	depends on SND_S5PV2XX_SOC_WM8580
+	default n
+	help
+	  Say Y if you want to run SoC as I2S-Slave and CODEC as I2S-Master.
+
 config SND_S3C24XX_SOC_SMDK2443_WM9710
 	tristate "SoC AC97 Audio support for SMDK2443 - WM9710"
 	depends on SND_S3C24XX_SOC && MACH_SMDK2443
