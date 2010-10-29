@@ -72,7 +72,9 @@ BUILD_KERNEL()
 
 	export KDIR=`pwd`
 
-#	make ARCH=arm $PROJECT_NAME"_rev"$HW_BOARD_REV"_defconfig"
+	if test "$1" = "defconfig"; then
+		make ARCH=arm $PROJECT_NAME"_rev"$HW_BOARD_REV"_defconfig"
+	fi
 
 	# make kernel
 	make -j$CPU_JOB_NUM HOSTCFLAGS="-g -O2" ARCH=arm CROSS_COMPILE=$TOOLCHAIN/$TOOLCHAIN_PREFIX
