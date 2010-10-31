@@ -1286,7 +1286,14 @@ static int s5pc11x_pm_enter(suspend_state_t state)
 	/* Set wakeup mask regsiter */
 	__raw_writel(0xFFED, S5P_WAKEUP_MASK); 
 	} else {
-		__raw_writel(0xFFDD, S5P_WAKEUP_MASK); //0xFFDD:key, RTC_ALARM	
+		if(HWREV >= 0xe)
+		{
+			__raw_writel(0xFFFD, S5P_WAKEUP_MASK); // RTC_ALARM
+		}
+		else
+		{
+			__raw_writel(0xFFDD, S5P_WAKEUP_MASK); //0xFFDD:key, RTC_ALARM	
+		}
 	}
 
 	__raw_writel(0xffffffff, S5PC110_VIC0REG(VIC_INT_ENABLE_CLEAR));
@@ -1341,7 +1348,15 @@ static int s5pc11x_pm_enter(suspend_state_t state)
 	//gpio key
 	if(HWREV >= 0xB)
 	{
-		s5pc11x_pm_set_eint(27, 0x4);
+		if(HWREV >= 0xe)
+		{
+			s5pc11x_pm_set_eint(25, 0x4);
+			s5pc11x_pm_set_eint(26, 0x4);
+		}
+		else
+		{
+			s5pc11x_pm_set_eint(27, 0x4);
+		}
 		s5pc11x_pm_set_eint(29, 0x4);
 	}
 	

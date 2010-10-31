@@ -80,7 +80,7 @@ static const u32 s5p_sys_clk_div0_tab_1GHZ[][DIV_TAB_MAX_FIELD] = {
         {0, 3, 3, 1, 3, 1, 4, 1, 3, 3, 0, 3},
         {1, 3, 1, 1, 3, 1, 4, 1, 3, 3, 0, 3},
         {3, 3, 0, 1, 3, 1, 4, 1, 3, 3, 0, 3},
-        {7, 7, 0, 0, 7, 0, 9, 0, 3, 3, 1, 4},
+        {7, 7, 0, 0, 7, 0, 9, 0, 3, 3, 1, 7},
 };
 
 /*pms value table*/
@@ -426,6 +426,15 @@ int s5pc11x_clk_set_rate(struct clk *clk, unsigned int target_freq,
 	/*check if change in DMC0 divider*/
 	if(s5p_sys_clk_div0_tab[prevIndex][11] != s5p_sys_clk_div0_tab[index][11])
 	{
+
+		if(s5p_sys_clk_div0_tab[index][11] == 3) { // for 200mhz/166mhz
+			__raw_writel(0x618, S5P_VA_DMC1 + 0x30);
+			__raw_writel(0x50e, S5P_VA_DMC0 + 0x30);
+		} else {					// for 100mhz/83mhz
+			__raw_writel(0x30c, S5P_VA_DMC1 + 0x30);
+			__raw_writel(0x287, S5P_VA_DMC0 + 0x30);
+		}
+
 		val = __raw_readl(S5P_CLK_DIV6);
 		val &= ~(S5P_CLKDIV6_ONEDRAM_MASK);
 		val |= (s5p_sys_clk_div0_tab[index][11] << S5P_CLKDIV6_ONEDRAM_SHIFT);
