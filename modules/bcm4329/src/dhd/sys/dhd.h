@@ -148,6 +148,12 @@ typedef struct dhd_pub {
 	/* Last error from dongle */
 	int dongle_error;
 
+	/* Early Suspend Status */
+	int early_suspended;
+
+	/* DHCP period */
+	int dhcp_in_progress;
+
 	uint8 country_code[WLC_CNTRY_BUF_SZ];
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && defined(CONFIG_HAS_WAKELOCK)
 	struct wake_lock wakelock[WAKE_LOCK_MAX];
@@ -175,10 +181,10 @@ typedef struct dhd_pub {
 
 	#define DHD_SPINWAIT_SLEEP_INIT(a) DECLARE_WAIT_QUEUE_HEAD(a);
 	#define SPINWAIT_SLEEP(a, exp, us) do { \
-		uint countdown = (us) + 9; \
-		while ((exp) && (countdown >= 10)) { \
+		uint countdown = (us) + 9999; \
+		while ((exp) && (countdown >= 10000)) { \
 			wait_event_timeout(a, FALSE, HZ/100); \
-			countdown -= 10; \
+			countdown -= 10000; \
 		} \
 	} while (0)
 

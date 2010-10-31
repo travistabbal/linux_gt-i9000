@@ -118,6 +118,8 @@ typedef struct pdp_arg {
 #define CSD_MAJOR_NUM			251
 #define CSD_MINOR_NUM			0
 
+static int pdp_net_activation_count = 0;
+static int vnet_start_xmit_flag = 0;
 
 #ifdef LOOP_BACK_TEST
 
@@ -650,6 +652,11 @@ static int vnet_open(struct net_device *net)
 #else
 	struct pdp_info *dev = (struct pdp_info *)net->priv;
 #endif
+
+	if (pdp_net_activation_count == 0) {
+		vnet_start_xmit_flag = 0;
+		printk("[%s] clear xmit_flag, there's no net device\n", __func__);
+	}
 	INIT_WORK(&dev->vn_dev.xmit_task, NULL);
 	netif_start_queue(net);
 
@@ -664,7 +671,6 @@ static int vnet_stop(struct net_device *net)
 	return 0;
 }
 
-static int vnet_start_xmit_flag = 0;
 static void vnet_defer_xmit(struct work_struct *data)
 {
 	struct sk_buff *skb = (struct sk_buff *)workqueue_data;
@@ -691,10 +697,12 @@ static void vnet_defer_xmit(struct work_struct *data)
 		dev->vn_dev.stats.tx_bytes += skb->len;
 		dev->vn_dev.stats.tx_packets++;
 	}
-    dev_kfree_skb_any(skb);
-    netif_wake_queue(net);
+	dev_kfree_skb_any(skb);
 	vnet_start_xmit_flag = 0;
+
 	up(&pdp_txlock);
+
+	netif_wake_queue(net);
 }
 
 static int vnet_start_xmit(struct sk_buff *skb, struct net_device *net)
@@ -1417,7 +1425,7 @@ static int pdp_mux(struct pdp_info *dev, const void *data, size_t len   )
 
 		DPRINTK(2, "hdr->id: %d, hdr->len: %d\n", hdr->id, hdr->len);
 
-		wake_lock_timeout(&pdp_wake_lock, 4*HZ);
+		wake_lock_timeout(&pdp_wake_lock, 6*HZ);
 #ifdef	NO_TTY_DPRAM
 		ret = multipdp_write(tx_buf, hdr->len +2);
 		if( ret <= 0 )
@@ -1636,6 +1644,7 @@ static int pdp_activate(pdp_arg_t *pdp_arg, unsigned type, unsigned flags)
 			vfree(dev);
 			return ret;
 		}
+		pdp_net_activation_count++;
 		up(&pdp_lock);
 
 		DPRINTK(1, "%s(id: %u) network device created\n", 
@@ -1724,6 +1733,7 @@ static int pdp_deactivate(pdp_arg_t *pdp_arg, int force)
 		//printk("<--- VNET Mutex lock : Before .. !!\n");
         vnet_stop(dev->vn_dev.net);
 		down(&pdp_txlock);
+		pdp_net_activation_count--;
 		//printk("<--- VNET Mutex lock : After .. !!\n");
 	#endif
 		DPRINTK(1, "%s(id: %u) network device removed\n", 

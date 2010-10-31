@@ -10,7 +10,7 @@
 /*magic no*/
 #define Si4709_IOC_MAGIC  0xFA
 /*max seq no*/
-#define Si4709_IOC_NR_MAX 36
+#define Si4709_IOC_NR_MAX 37
 
 /*commands*/
 

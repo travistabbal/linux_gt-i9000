@@ -219,7 +219,7 @@ extern unsigned int HWREV;
  */
 static unsigned char cpdump_debug_file_name[DPRAM_ERR_MSG_LEN];
 
-static int kernel_sec_dump_cp_handle1(vod);
+static int kernel_sec_dump_cp_handle1(void);
 static int kernel_sec_dump_cp_handle2(void);
 
 static int kernel_sec_dump_cp_config_uploadmode(void);
@@ -2614,18 +2614,16 @@ static void send_tasklet_handler(unsigned long data)
 
 	if (device != NULL && device->serial.tty) {
 		struct tty_struct *tty = device->serial.tty;
-		do {
 			if(non_cmd & INT_MASK_SEND_RFS)
 				ret = dpram_read_rfs(device, non_cmd);
 			else
 			ret = dpram_read(device, non_cmd);
-			if (ret == -EAGAIN) {
+			if (ret == -EAGAIN && phone_power_off_sequence == 0) {
 				if (non_cmd & INT_MASK_SEND_F) tasklet_schedule(&fmt_send_tasklet);
 				if (non_cmd & INT_MASK_SEND_R) tasklet_schedule(&raw_send_tasklet);
 				if (non_cmd & INT_MASK_SEND_RFS) tasklet_schedule(&rfs_send_tasklet);
 				return ;
 			}
-		}while(ret);
 #ifdef	NO_TTY_DPRAM
       if( tty->index != 1)	//index : 0=dpram0, 1=dpram1, 2=rfs	
 #endif
@@ -2686,23 +2684,20 @@ static void cmd_error_display_handler(void)
 	if(kernel_sec_get_debug_level() != KERNEL_SEC_DEBUG_LEVEL_LOW) {
 		u32 mailbox_AB=0x00;
 
-		buf[0] = '1';
-		buf[1] = ' ';
+		buf[0] = dpram_phone_getstatus();
+		buf[1] = gpio_get_value(IRQ_INT_ONEDRAM_AP_N);
 
-		if(*onedram_sem == 0x1) {
-			READ_FROM_DPRAM((buf + 2), DPRAM_PHONE2PDA_FORMATTED_BUFFER_ADDRESS, sizeof (buf) - 3);
-			if (kernel_sec_dump_ap_cp != 1)
+		snprintf(buf+3, 10, "%d", cp_reset_count);
+
+		if (kernel_sec_dump_ap_cp != 1)
+		{
+			mailbox_AB=*onedram_mailboxAB;
+			printk(" - [cmd_error_display_handler] MAILBOX_CHECK MB_AB =0x%8x\n",mailbox_AB);
+			if(mailbox_AB == KERNEL_SEC_DUMP_CP_DEAD_INDICATOR) 
 			{
-				mailbox_AB=*onedram_mailboxAB;
-				printk(" - [cmd_error_display_handler] MAILBOX_CHECK MB_AB =0x%8x\n",mailbox_AB);
-				if(mailbox_AB == KERNEL_SEC_DUMP_CP_DEAD_INDICATOR) 
-				{
-					kernel_sec_dump_cp_handle1();			
-				}
-			}	
-		}else{
-			memcpy(buf+2, "Modem Error Fatal", sizeof("Modem Error Fatal"));
-		}
+				kernel_sec_dump_cp_handle1();			
+			}
+		}	
 	} else {
 		memcpy((void *)buf, "8 $PHONE-OFF", sizeof("8 $PHONE-OFF"));
 	}
@@ -2864,7 +2859,7 @@ static void non_command_handler(u16 non_cmd)
 	}
 
 	if (non_cmd & INT_MASK_SEND_R) {
-		wake_lock_timeout(&dpram_wake_lock, HZ*4);
+		wake_lock_timeout(&dpram_wake_lock, HZ*6);
 		dpram_tasklet_data[RAW_INDEX].device = &dpram_table[RAW_INDEX];
 		dpram_tasklet_data[RAW_INDEX].non_cmd = (non_cmd & (INT_MASK_SEND_R | INT_MASK_REQ_ACK_R));
 
@@ -2889,7 +2884,7 @@ static void non_command_handler(u16 non_cmd)
 	}
 
 	if (non_cmd & INT_MASK_RES_ACK_R) {
-		wake_lock_timeout(&dpram_wake_lock, HZ*4);
+		wake_lock_timeout(&dpram_wake_lock, HZ*6);
 		tasklet_schedule(&raw_res_ack_tasklet);
 	}
 
@@ -3032,20 +3027,17 @@ static irqreturn_t phone_active_irq_handler(int irq, void *dev_id)
 
 static int kernel_sec_dump_cp_handle1(void)
 {
-    /*
-     * CACHE CP DUMP INFO - FileName + LinuNum
-     */
-	if(*onedram_sem == 0x1) {
-		memset((void *)cpdump_debug_file_name, 0, sizeof (cpdump_debug_file_name));
+	/*
+	 * CACHE CP DUMP INFO - FileName + LinuNum
+	 */
+	memset((void *)cpdump_debug_file_name, 0, sizeof (cpdump_debug_file_name));
 
+	if(*onedram_sem == 0x1)
 		READ_FROM_DPRAM(cpdump_debug_file_name, DPRAM_FATAL_DISPLAY_ADDRESS,
-                            sizeof (cpdump_debug_file_name));
-	}
+				sizeof (cpdump_debug_file_name));
 
 	if(cpdump_debug_file_name[0] == NULL)
-	{
 		memcpy(cpdump_debug_file_name, "Unknown CP Crash", sizeof("Unknown CP Crash"));
-	}
 
 	printk(" +--------------------------------------------+\n");
 	printk(" - CP Dump Cause - \n");
@@ -3391,6 +3383,14 @@ static int dpram_shutdown(struct platform_Device *dev)
 	printk("\ndpram_shutdown !!!!!!!!!!!!!!!!!!!!!\n");
 	ret = del_timer(&request_semaphore_timer);
 	printk("\ndpram_shutdown ret : %d\n", ret);
+
+	unregister_dpram_driver();
+	unregister_dpram_err_device();
+	
+	free_irq(IRQ_INT_ONEDRAM_AP_N, NULL);
+	free_irq(IRQ_PHONE_ACTIVE, NULL);
+
+	kill_tasklets();
 	return 0;
 }
 
@@ -3484,7 +3484,7 @@ static struct file_operations onedram_rfs_fops = {
 
 
 static struct miscdevice onedram_rfs_device = {
-	.minor = MISC_DYNAMIC_MINOR,
+	.minor = ONEDRAM_RFS_MINOR,
 	.name = "onedram_rfs",
 	.fops = &onedram_rfs_fops,
 };

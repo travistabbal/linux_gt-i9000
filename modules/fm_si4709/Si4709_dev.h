@@ -2,6 +2,7 @@
 #define _Si4709_DEV_H
 
 #include <linux/i2c.h>
+#include "Si4709_common.h"
 
 typedef struct
 {
@@ -111,6 +112,15 @@ typedef struct
 
 extern int Si4709_dev_wait_flag;
 
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+extern int Si4709_RDS_flag;
+extern int RDS_Data_Available;
+extern int RDS_Data_Lost;
+extern int RDS_Groups_Available_till_now;
+extern struct workqueue_struct *Si4709_wq;
+extern struct work_struct Si4709_work;
+#endif
+
 /*Function prototypes*/
 extern int Si4709_dev_init(struct i2c_client *);
 extern int Si4709_dev_exit(void);
@@ -153,12 +163,16 @@ extern int Si4709_dev_RDS_timeout_set(u32);
 extern int Si4709_dev_device_id(device_id *);          	
 extern int Si4709_dev_chip_id(chip_id *);					
 extern int Si4709_dev_sys_config2(sys_config2 *);
-int Si4709_dev_sys_config3(sys_config3 *);
+extern int Si4709_dev_sys_config3(sys_config3 *);
 extern int Si4709_dev_power_config(power_config *);		
 extern int Si4709_dev_AFCRL_get(u8*);
 extern int Si4709_dev_DE_set(u8);
-int Si4709_dev_status_rssi(status_rssi *status);
-int Si4709_dev_sys_config2_set(sys_config2 *sys_conf2);
-int Si4709_dev_sys_config3_set(sys_config3 *sys_conf3);
+extern int Si4709_dev_status_rssi(status_rssi *status);
+extern int Si4709_dev_sys_config2_set(sys_config2 *sys_conf2);
+extern int Si4709_dev_sys_config3_set(sys_config3 *sys_conf3);
+
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+extern void Si4709_work_func(struct work_struct*);
+#endif
 #endif
 
