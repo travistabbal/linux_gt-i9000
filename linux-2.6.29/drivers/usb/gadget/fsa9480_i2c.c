@@ -232,12 +232,19 @@ void ap_usb_power_on(int set_vaue)
 {
  	byte reg_value=0;
 	byte reg_address=0x0D;
+	int ret = 0, regbit = 0; // regbit => set "1" if 0x0D register's 7th bit is "0"  
 
 	if(set_vaue){
-		Get_MAX8998_PM_ADDR(reg_address, &reg_value, 1); // read 0x0D register
+		ret = Get_MAX8998_PM_ADDR(reg_address, &reg_value, 1); // read 0x0D register
+		printk("[ap_usb_power_on]Get_MAX8998_PM_ADDR, reg_value = %d, ret = %d\n",reg_value,ret);
+		regbit = (((reg_value >> 7)&0x1));
+
+		if(!regbit){
 		reg_value = reg_value | (0x1 << 7);
-		Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
-		printk("[ap_usb_power_on]AP USB Power ON, askon: %d, mtp : %d\n",askonstatus,mtp_mode_on);
+		ret = Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
+		printk("[ap_usb_power_on]AP USB Power ON, askon: %d, mtp : %d, ret = %d\n",askonstatus,mtp_mode_on,ret);
+			}
+
 			if(mtp_mode_on == 1) {
 				samsung_kies_mtp_mode_flag = 1;
 				printk("************ [ap_usb_power_on] samsung_kies_mtp_mode_flag:%d, mtp:%d\n", samsung_kies_mtp_mode_flag, mtp_mode_on);
@@ -248,10 +255,11 @@ void ap_usb_power_on(int set_vaue)
 			}
 		}
 	else{
-		Get_MAX8998_PM_ADDR(reg_address, &reg_value, 1); // read 0x0D register
+		ret = Get_MAX8998_PM_ADDR(reg_address, &reg_value, 1); // read 0x0D register
+		printk("[ap_usb_power_on]Get_MAX8998_PM_ADDR, reg_value = %d, ret = %d\n",reg_value,ret);
 		reg_value = reg_value & ~(0x1 << 7);
-		Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
-		printk("[ap_usb_power_on]AP USB Power OFF, askon: %d, mtp : %d\n",askonstatus,mtp_mode_on);
+		ret = Set_MAX8998_PM_ADDR(reg_address,&reg_value,1);
+		printk("[ap_usb_power_on]AP USB Power OFF, askon: %d, mtp : %d, ret = %d\n",askonstatus,mtp_mode_on,ret);
 		}
 		
 }
@@ -1091,12 +1099,16 @@ extern void askon_gadget_disconnect(void);
 extern int s3c_usb_cable(int connected);
 extern void vps_status_change(int status);
 extern void car_vps_status_change(int status);
-
+byte chip_error=0;
 void FSA9480_ProcessDevice(u8 dev1, u8 dev2, u8 attach)
 {
 
 	DEBUG_FSA9480("FSA9480_ProcessDevice function!!!!\n");
 	printk("[FSA9480]FSA INTR = dev1 : 0x%x, dev2 : 0x%x, Attach : 0x%x\n",dev1, dev2, attach);
+
+	if(!attach && !chip_error && (mtp_mode_on == 1))
+		chip_error = 0xAE;
+	
 	if(dev1)
 	{
 		switch(dev1)
@@ -1135,6 +1147,7 @@ void FSA9480_ProcessDevice(u8 dev1, u8 dev2, u8 attach)
 				{	
 					MicroUSBStatus = 0;
 					inaskonstatus = 0;
+					chip_error = 0;
 					#if 0
 					if(connectivity_switching_init_state)
 						s3c_usb_cable(0);							
@@ -1197,6 +1210,7 @@ void FSA9480_ProcessDevice(u8 dev1, u8 dev2, u8 attach)
 				else if(attach & FSA9480_INT1_DETACH)
 				{
 					DEBUG_FSA9480("FSA9480_DEV_TY2_JIG_USB_ON --- DETACH\n");
+					chip_error = 0;
 					MicroJigUSBOnStatus = 0;
 					inaskonstatus = 0;
 #if 0	
@@ -1226,6 +1240,7 @@ void FSA9480_ProcessDevice(u8 dev1, u8 dev2, u8 attach)
 				else if(attach & FSA9480_INT1_DETACH)
 				{
 					DEBUG_FSA9480("FSA9480_DEV_TY2_JIG_USB_OFF --- DETACH\n");
+					chip_error = 0;
 					MicroJigUSBOffStatus = 0;
 					inaskonstatus = 0;
 #if 0	
@@ -1300,6 +1315,11 @@ void FSA9480_ProcessDevice(u8 dev1, u8 dev2, u8 attach)
 			break;
 		}
 	}
+
+	if((attach == FSA9480_INT1_ATTACH) && (chip_error == 0xAE) && (mtp_mode_on == 1)){
+		ap_usb_power_on(1);
+		chip_error = 0;
+		}
 
 }
 

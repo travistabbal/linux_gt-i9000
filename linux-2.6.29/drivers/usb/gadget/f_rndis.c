@@ -691,11 +691,10 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
 	rndis_set_param_medium(rndis->config, NDIS_MEDIUM_802_3, 0);
 	rndis_set_host_mac(rndis->config, rndis->ethaddr);
 
-#if 0
+#if 1
 // FIXME
-	if (rndis_set_param_vendor(rndis->config, vendorID,
-				manufacturer))
-		goto fail0;
+	if (rndis_set_param_vendor(rndis->config, 0x04E8, "SAMSUNG"))
+		goto fail;
 #endif
 
 	/* NOTE:  all that is done without knowing or caring about

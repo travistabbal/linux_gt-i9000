@@ -625,6 +625,7 @@ static long  mtpg_ioctl(struct file *fd, unsigned int code, unsigned long arg)
 	int status = 0; 
 	int size = 0;
 	int ret_value = 0;
+	int max_pkt = 0;
 
 	char *buf_ptr = NULL;
 	char buf[USB_PTPREQUEST_GETSTATUS_SIZE+1] = {0};
@@ -691,6 +692,14 @@ static long  mtpg_ioctl(struct file *fd, unsigned int code, unsigned long arg)
 			copy_to_user(buf_ptr, dev->cancel_io_buf, USB_PTPREQUEST_CANCELIO_SIZE);
 			DEBUG_MTPB("[%s] GET_SETUP_DATA\tline = [%d] \n", __func__,__LINE__); 
 			break;
+		case SEND_RESET_ACK:
+			req->zero = 1;
+			req->length = 0;
+			//printk("[%s] SEND_RESET_ACK and usb_ep_queu 0 data size = %d\tline = [%d] \n", __func__,size,__LINE__); 
+			status = usb_ep_queue(cdev->gadget->ep0, req, GFP_ATOMIC);
+			if (status < 0)
+					DEBUG_MTPB("[%s] Error at usb_ep_queue\tline = [%d] \n", __func__,__LINE__); 
+			break;
 		case SET_SETUP_DATA:
 			buf_ptr = (char *)arg;
 			copy_from_user(buf, buf_ptr, USB_PTPREQUEST_GETSTATUS_SIZE);
@@ -702,6 +711,27 @@ static long  mtpg_ioctl(struct file *fd, unsigned int code, unsigned long arg)
 			status = usb_ep_queue(cdev->gadget->ep0, req, GFP_ATOMIC);
 			if (status < 0)
 					DEBUG_MTPB("[%s] Error at usb_ep_queue\tline = [%d] \n", __func__,__LINE__); 
+			break;
+		case SET_ZLP_DATA:
+			req->zero = 1;
+			req->length = 0;
+			printk("[%s] SEND_ZLP_DATA and usb_ep_queu 0 data size = %d\tline = [%d] \n", __func__,size,__LINE__);
+			status = usb_ep_queue(dev->bulk_in, req, GFP_ATOMIC);
+			if (status < 0) {
+				printk("[%s] Error at usb_ep_queue\tline = [%d] \n", __func__,__LINE__); 
+			} else {
+				printk("[%s] usb_ep_queue passed and status = %d\tline = [%d] \n", __func__,__LINE__,status); 
+				status =20;
+			}
+			break;
+		case GET_HIGH_FULL_SPEED:
+			printk("[%s] GET_HIGH_FULL_SPEED and \tline = [%d] \n", __func__,__LINE__);
+			max_pkt = dev->bulk_in->maxpacket;
+			printk("[%s]  line = %d max_pkt = [%d] \n", __func__,__LINE__, max_pkt); 
+			if(max_pkt == 64)
+				status = 64;
+			else
+				status =512;
 			break;
 			
 		default:
