@@ -374,8 +374,19 @@ static int mmc_blk_issue_rq(struct mmc_queue *mq, struct request *req)
 				/* Redo read one sector at a time */
 				printk(KERN_DEBUG "%s: retrying using single "
 				       "block read\n", req->rq_disk->disk_name);
-				disable_multi = 1;
-				continue;
+				if(brq.data.error == -EILSEQ) {
+					mq->rx_retries++;
+					if(mq->rx_retries == 3) {
+						mq->rx_retries = 0;
+						disable_multi = 1;
+					}
+					mmc_card_adjust_cfg(card->host, READ);
+					continue;
+				}
+				else {
+					disable_multi = 1;
+					continue;
+				}
 			}
 			status = get_card_status(card, req);
 		} else if (disable_multi == 1) {
@@ -448,6 +459,16 @@ static int mmc_blk_issue_rq(struct mmc_queue *mq, struct request *req)
 				ret = __blk_end_request(req, -EIO, brq.data.blksz);
 				spin_unlock_irq(&md->lock);
 				continue;
+			}
+			else {
+				if(brq.data.error == -EILSEQ) {
+					mq->tx_retries++;
+					mmc_card_adjust_cfg(card->host, WRITE);
+					if(mq->tx_retries < 3)
+						continue;
+					else
+						mq->tx_retries = 0;
+				}
 			}
 			goto cmd_err;
 		}

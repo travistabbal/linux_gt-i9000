@@ -39,8 +39,6 @@
 #define SDHCI_USE_LEDS_CLASS
 #endif
 
-#define CONFIG_INAND_TIMEOUT_PATCH
-
 static unsigned int debug_quirks = 0;
 
 static void sdhci_prepare_data(struct sdhci_host *, struct mmc_data *);
@@ -907,10 +905,8 @@ static void sdhci_send_command(struct sdhci_host *host, struct mmc_command *cmd)
 
 	sdhci_prepare_data(host, cmd->data);
 
-#if defined(CONFIG_INAND_TIMEOUT_PATCH)
 	if (cmd->flags & MMC_RSP_BUSY)
 		writeb(0xE, host->ioaddr + SDHCI_TIMEOUT_CONTROL);
-#endif
 
 	writel(cmd->arg, host->ioaddr + SDHCI_ARGUMENT);
 
@@ -1256,12 +1252,33 @@ out:
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
+void sdhci_adjust_cfg(struct mmc_host *mmc, int rw)
+{
+	struct sdhci_host *host;
+	unsigned long flags;
+	struct mmc_ios *ios = &mmc->ios;
+	unsigned int clock;
+
+	host = mmc_priv(mmc);
+
+	spin_lock_irqsave(&host->lock, flags);
+
+	if(host->ops->adjust_cfg)
+		host->ops->adjust_cfg(host, rw);
+
+	sdhci_reset(host, SDHCI_RESET_CMD | SDHCI_RESET_DATA);
+
+	mmiowb();
+	spin_unlock_irqrestore(&host->lock, flags);
+}
+
 static const struct mmc_host_ops sdhci_ops = {
 	.request	= sdhci_request,
 	.set_ios	= sdhci_set_ios,
 	.get_ro		= sdhci_get_ro,
 	.get_cd		= sdhci_get_cd,
 	.enable_sdio_irq = sdhci_enable_sdio_irq,
+	.adjust_cfg = sdhci_adjust_cfg,
 };
 
 /*****************************************************************************\
