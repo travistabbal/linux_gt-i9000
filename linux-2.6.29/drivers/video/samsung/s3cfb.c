@@ -60,6 +60,10 @@
         //extern suspend_state_t requested_suspend_state;
 #endif
 
+#include <linux/gpio.h>
+#include <plat/gpio-cfg.h>
+#include <plat/regs-gpio.h>
+
 static struct s3cfb_global *fbdev;
 
 
@@ -1475,6 +1479,10 @@ void s3cfb_early_suspend(struct early_suspend *h)
 	msleep(20);
 	tl2796_ldi_disable();
 	
+//lcd_reset low
+	s3c_gpio_setpin(GPIO_MLCD_RST, 0);
+	msleep(20);
+
 	#ifdef CONFIG_FB_S3C_MDNIE
 	writel(0,fbdev->regs + 0x27c);
 	msleep(20);  // mdelay->msleep
@@ -1682,6 +1690,17 @@ int s3cfb_resume(struct platform_device *pdev)
 
 #endif 
 
+static int s3cfb_shutdown(struct platform_Device *dev)
+{
+	msleep(20);
+	tl2796_ldi_disable();
+	
+	//lcd_reset low
+	s3c_gpio_setpin(GPIO_MLCD_RST, 0);
+	msleep(120);
+
+	return 0;
+}
 
 static struct platform_driver s3cfb_driver = {
 	.probe		= s3cfb_probe,
@@ -1690,6 +1709,8 @@ static struct platform_driver s3cfb_driver = {
 	.suspend		= s3cfb_suspend,
 	.resume		= s3cfb_resume,
 #endif
+	.shutdown	= s3cfb_shutdown,
+
 	.driver		= {
 		.name	= S3CFB_NAME,
 		.owner	= THIS_MODULE,

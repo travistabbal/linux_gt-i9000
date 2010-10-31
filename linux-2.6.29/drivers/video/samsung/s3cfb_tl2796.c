@@ -267,18 +267,7 @@ const unsigned short s6e63m0_22gamma_300cd[] = {
 	0x1B8,
 	0x100,
 	0x1FC,
-                                        
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                                          
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -308,19 +297,7 @@ const unsigned short s6e63m0_22gamma_290cd[] = {
 	0x1B6,
 	0x100,
 	0x1FA,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                                                                        
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -350,18 +327,6 @@ const unsigned short s6e63m0_22gamma_280cd[] = {
 	0x1B3,
 	0x100,
 	0x1F7,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -391,19 +356,7 @@ const unsigned short s6e63m0_22gamma_270cd[] = {
 	0x100,
 	0x1B1,
 	0x100,
-	0x1F4,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1F4,                                       
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -433,18 +386,7 @@ const unsigned short s6e63m0_22gamma_260cd[] = {
 	0x100,
 	0x1AE,
 	0x100,
-	0x1F1,
-                                       
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1F1,                                       
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -474,19 +416,7 @@ const unsigned short s6e63m0_22gamma_250cd[] = {
 	0x100,
 	0x1AB,
 	0x100,
-	0x1ED,
-                                        
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1ED,                                       
                                                 
                                                 
 	ENDDEF, 0x0000                                
@@ -518,19 +448,7 @@ const unsigned short s6e63m0_22gamma_240cd[] = {
 	0x1A8,
 	0x100,
 	0x1E9,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -560,18 +478,7 @@ const unsigned short s6e63m0_22gamma_230cd[] = {
 	0x1A6,
 	0x100,
 	0x1E6,
-                                        
-	                                              
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                             
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -601,18 +508,7 @@ const unsigned short s6e63m0_22gamma_220cd[] = {
 	0x1A3,
 	0x100,
 	0x1E2,
-                                        
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                                                                       
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -642,19 +538,7 @@ const unsigned short s6e63m0_22gamma_210cd[] = {
 	0x1A0,
 	0x100,
 	0x1DD,
-                                       
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                                                                     
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -684,19 +568,7 @@ const unsigned short s6e63m0_22gamma_200cd[] = {
 	0x19D,
 	0x100,
 	0x1D9,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -726,19 +598,7 @@ const unsigned short s6e63m0_22gamma_190cd[] = {
 	0x19A,
 	0x100,
 	0x1D5,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -768,17 +628,6 @@ const unsigned short s6e63m0_22gamma_180cd[] = {
 	0x197,
 	0x100,
 	0x1D0,
-                                        
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -809,18 +658,6 @@ const unsigned short s6e63m0_22gamma_170cd[] = {
 	0x194,
 	0x100,
 	0x1CC,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -850,19 +687,7 @@ const unsigned short s6e63m0_22gamma_160cd[] = {
 	0x100,
 	0x191,
 	0x100,
-	0x1C8,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1C8,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -892,18 +717,7 @@ const unsigned short s6e63m0_22gamma_150cd[] = {
 	0x100,
 	0x18D,
 	0x100,
-	0x1C2,
-                                        
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1C2,                                     
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -933,18 +747,7 @@ const unsigned short s6e63m0_22gamma_140cd[] = {
 	0x100,
 	0x18A,
 	0x100,
-	0x1BE,
-                                        
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1BE,                                     
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -975,18 +778,7 @@ const unsigned short s6e63m0_22gamma_130cd[] = {
 	0x186,
 	0x100,
 	0x1B8,
-                                        
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                             
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1015,18 +807,7 @@ const unsigned short s6e63m0_22gamma_120cd[] = {
 	0x100,
 	0x182,
 	0x100,
-	0x1B3,
-                                        
-	                                              
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1B3,                                    
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1056,18 +837,7 @@ const unsigned short s6e63m0_22gamma_110cd[] = {
 	0x100,
 	0x17E,
 	0x100,
-	0x1AD,
-                                        
-	                                              
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
+	0x1AD,                                       
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1099,18 +869,7 @@ const unsigned short s6e63m0_22gamma_100cd[] = {
 	0x17A,
 	0x100,
 	0x1A7,
-                                        
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                           
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1140,19 +899,7 @@ const unsigned short s6e63m0_22gamma_90cd[] = {
 	0x176,
 	0x100,
 	0x1A0,
-                                        
-                                                
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                             
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1182,17 +929,7 @@ const unsigned short s6e63m0_22gamma_80cd[] = {
 	0x172,
 	0x100,
 	0x19A,
-                                        
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                                                                     
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1222,18 +959,7 @@ const unsigned short s6e63m0_22gamma_70cd[] = {
 	0x16C,
 	0x100,
 	0x194,
-                                        
-                                                
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                     
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1263,17 +989,7 @@ const unsigned short s6e63m0_22gamma_60cd[] = {
 	0x167,
 	0x100,
 	0x18D,
-                                        
-                                                
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                              
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1304,26 +1020,77 @@ const unsigned short s6e63m0_22gamma_50cd[] = {
 	0x161,
 	0x100,
 	0x183,
-	                                      
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                              
 	ENDDEF, 0x0000                                
-};                                              
+}; 
+
+const unsigned short s6e63m0_22gamma_40cd[] = { 
+	//gamma set
+	0x0FA,
+	
+	0x102,
+	
+	0x118,
+	0x108,
+	0x124,
+	0x197,
+	0x158,
+	0x171,
+	0x1CC,
+	0x1CB,
+	0x1C0,
+	0x1C5,
+	0x1C9,
+	0x1BA,
+	0x1D9,
+	0x1DC,
+	0x1D1,
+	0x100,
+	0x15B,
+	0x100,
+	0x15A,
+	0x100,
+	0x17A,
+
+	ENDDEF, 0x0000                               
+}; 
+
+const unsigned short s6e63m0_22gamma_30cd[] = { 
+	//gamma set
+	0x0FA,
+	
+	0x102,
+	
+	0x118,
+	0x108,
+	0x124,
+	0x1A1,
+	0x151,
+	0x17B,
+	0x1CE,
+	0x1CB,
+	0x1C2,
+	0x1C7,
+	0x1CB,
+	0x1BC,
+	0x1DA,
+	0x1DD,
+	0x1D3,
+	0x100,
+	0x153,
+	0x100,
+	0x152,
+	0x100,
+	0x16F, 	                                      
+
+	ENDDEF, 0x0000                              
+}; 
                                                 
 const unsigned short *p22Gamma_set[] = {        
                                                 
-	s6e63m0_22gamma_50cd,//0                               
+	s6e63m0_22gamma_30cd,//0                               
+	s6e63m0_22gamma_40cd,                         
 	s6e63m0_22gamma_70cd,                         
-	s6e63m0_22gamma_80cd,                         
 	s6e63m0_22gamma_90cd,                         
 	s6e63m0_22gamma_100cd,                     
 	s6e63m0_22gamma_110cd,  //5                      
@@ -1375,19 +1142,7 @@ const unsigned short s6e63m0_19gamma_300cd[] = {
 	0x1B7,
 	0x100,
 	0x1FC,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1418,19 +1173,7 @@ const unsigned short s6e63m0_19gamma_290cd[] = {
 	0x1B6,
 	0x100,
 	0x1FB,
-                                        
-                                                
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1461,19 +1204,7 @@ const unsigned short s6e63m0_19gamma_280cd[] = {
 	0x1B4,
 	0x100,
 	0x1F8,
-                                        
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1504,18 +1235,6 @@ const unsigned short s6e63m0_19gamma_270cd[] = {
 	0x1B1,
 	0x100,
 	0x1F5,
-                                        
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1547,18 +1266,6 @@ const unsigned short s6e63m0_19gamma_260cd[] = {
 	0x1AE,
 	0x100,
 	0x1F2,
-                                       
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1590,19 +1297,7 @@ const unsigned short s6e63m0_19gamma_250cd[] = {
 	0x1AC,
 	0x100,
 	0x1EE,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                                 
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -1633,18 +1328,6 @@ const unsigned short s6e63m0_19gamma_240cd[] = {
 	0x1A9,
 	0x100,
 	0x1EA,
-                            
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1676,18 +1359,6 @@ const unsigned short s6e63m0_19gamma_230cd[] = {
 	0x1A6,
 	0x100,
 	0x1E6,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1719,18 +1390,6 @@ const unsigned short s6e63m0_19gamma_220cd[] = {
 	0x1A3,
 	0x100,
 	0x1E2,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1762,18 +1421,6 @@ const unsigned short s6e63m0_19gamma_210cd[] = {
 	0x1A0,
 	0x100,
 	0x1DD,
-                                       
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1805,18 +1452,6 @@ const unsigned short s6e63m0_19gamma_200cd[] = {
 	0x19D,
 	0x100,
 	0x1D9,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1848,18 +1483,6 @@ const unsigned short s6e63m0_19gamma_190cd[] = {
 	0x19A,
 	0x100,
 	0x1D5,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1891,18 +1514,6 @@ const unsigned short s6e63m0_19gamma_180cd[] = {
 	0x197,
 	0x100,
 	0x1D0,
-                                        
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1934,18 +1545,6 @@ const unsigned short s6e63m0_19gamma_170cd[] = {
 	0x194,
 	0x100,
 	0x1CB,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -1977,18 +1576,6 @@ const unsigned short s6e63m0_19gamma_160cd[] = {
 	0x190,
 	0x100,
 	0x1C7,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2020,18 +1607,6 @@ const unsigned short s6e63m0_19gamma_150cd[] = {
 	0x18D,
 	0x100,
 	0x1C2,
-                                        
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2063,17 +1638,6 @@ const unsigned short s6e63m0_19gamma_140cd[] = {
 	0x18A,
 	0x100,
 	0x1BE,
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2105,18 +1669,6 @@ const unsigned short s6e63m0_19gamma_130cd[] = {
 	0x186,
 	0x100,
 	0x1B8,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2148,19 +1700,7 @@ const unsigned short s6e63m0_19gamma_120cd[] = {
 	0x183,
 	0x100,
 	0x1B3,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -2191,18 +1731,6 @@ const unsigned short s6e63m0_19gamma_110cd[] = {
 	0x17E,
 	0x100,
 	0x1AD,
-                                        
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2234,18 +1762,6 @@ const unsigned short s6e63m0_19gamma_100cd[] = {
 	0x17A,
 	0x100,
 	0x1A7,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2277,19 +1793,7 @@ const unsigned short s6e63m0_19gamma_90cd[] = {
 	0x176,
 	0x100,
 	0x1A1,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                                 
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -2320,19 +1824,7 @@ const unsigned short s6e63m0_19gamma_80cd[] = {
 	0x171,
 	0x100,
 	0x19B,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
-                                                
+                                               
 	ENDDEF, 0x0000                                
 };                                              
                                                 
@@ -2363,18 +1855,6 @@ const unsigned short s6e63m0_19gamma_70cd[] = {
 	0x16C,
 	0x100,
 	0x194,
-                                        
-		                                            
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2406,18 +1886,6 @@ const unsigned short s6e63m0_19gamma_60cd[] = {
 	0x167,
 	0x100,
 	0x18C,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
 };                                              
@@ -2449,28 +1917,80 @@ const unsigned short s6e63m0_19gamma_50cd[] = {
 	0x160,
 	0x100,
 	0x183,
-                                        
-			                                          
-                                                
-	                                              
-	//gamma update                                
-	0x0FA,	                                      
-	0x103,                                        
-                                                
-	SLEEPMSEC, 10,                                
-                                                
-	//Display on                                  
-	0x029,                                        
                                                 
 	ENDDEF, 0x0000                                
-};                                              
+}; 
+
+const unsigned short s6e63m0_19gamma_40cd[] = { 
+	//gamma set
+	0x0FA,
+
+	0x102,	
+                                                
+	0x118,
+	0x108,
+	0x124,
+	0x193,
+	0x177,
+	0x172,
+	0x1CF,
+	0x1D0,
+	0x1C5,
+	0x1CB,
+	0x1CF,
+	0x1C1,
+	0x1DD,
+	0x1E0,
+	0x1D6,
+	0x100,
+	0x15B,
+	0x100,
+	0x15A,
+	0x100,
+	0x17A,
+
+	ENDDEF, 0x0000                              
+}; 
+
+const unsigned short s6e63m0_19gamma_30cd[] = { 
+	//gamma set
+	0x0FA,
+
+	0x102,	
+                                                
+	0x118,
+	0x108,
+	0x124,
+	0x19D,
+	0x175,
+	0x17C,
+	0x1D0,
+	0x1D0,
+	0x1C6,
+	0x1CD,
+	0x1D1,
+	0x1C3,
+	0x1DE,
+	0x1E1,
+	0x1D8,
+	0x100,
+	0x153,
+	0x100,
+	0x152,
+	0x100,
+	0x16F,
+
+	ENDDEF, 0x0000                               
+}; 
+
+
                                                 
                                                 
 const unsigned short *p19Gamma_set[] = {        
-	s6e63m0_19gamma_50cd,//0                      
+	s6e63m0_19gamma_30cd,//0                      
 	//s6e63m0_19gamma_50cd,                         
+	s6e63m0_19gamma_40cd,                         
 	s6e63m0_19gamma_70cd,                         
-	s6e63m0_19gamma_80cd,                         
 	s6e63m0_19gamma_90cd,                         
 	s6e63m0_19gamma_100cd, //5                    
 	s6e63m0_19gamma_110cd,                        
@@ -2493,6 +2013,18 @@ const unsigned short *p19Gamma_set[] = {
 	s6e63m0_19gamma_280cd,                        
 	s6e63m0_19gamma_290cd,                        
 	s6e63m0_19gamma_300cd,//25                    
+}; 
+
+const unsigned short gamma_update[] = { 
+	//gamma update
+	0x0FA,	
+	0x103,
+
+	SLEEPMSEC, 10,
+
+	//Display on
+	0x029,
+	ENDDEF, 0x0000                              
 }; 
 
 #ifdef ACL_ENABLE
@@ -2525,6 +2057,7 @@ const unsigned short acl_cutoff_init[] = {
 	ENDDEF, 0x0000
 };
 
+#if 0
 const unsigned short acl_cutoff_12p[] = {
 	0x0F0,
 	0x15A,
@@ -2633,6 +2166,454 @@ const unsigned short *ACL_cutoff_set[] = {
 	acl_cutoff_35p,
 	acl_cutoff_40p,
 };
+#else
+const unsigned short acl_cutoff_8p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x102,  0x103,       	
+	0x104,  0x105,  0x106,  0x107,       	
+	0x108,  0x109,  0x10A,  0x10B,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_14p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x103,  0x105,       	
+	0x106,  0x108,  0x10A,  0x10C,       	
+	0x10E,  0x10F,  0x111,  0x113,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_20p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x103,  0x108,       	
+	0x10C,  0x10F,  0x112,  0x114,       	
+	0x115,  0x117,  0x118,  0x119,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_24p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x104,  0x107,       	
+	0x10A,  0x10D,  0x111,  0x114,       	
+	0x117,  0x11A,  0x11D,  0x120,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_28p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x105,  0x108,       	
+	0x10C,  0x10F,  0x113,  0x117,       	
+	0x11A,  0x11E,  0x121,  0x125,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+
+const unsigned short acl_cutoff_32p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x105,  0x109,       	
+	0x10D,  0x111,  0x116,  0x11A,       	
+	0x11E,  0x122,  0x126,  0x12A,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_35p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x106,  0x10A,       	
+	0x10F,  0x113,  0x118,  0x11C,       	
+	0x121,  0x125,  0x12A,  0x12E,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_37p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+	
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x106,  0x10B,       	
+	0x110,  0x115,  0x11A,  0x11E,       	
+	0x123,  0x128,  0x12D,  0x132,
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+
+const unsigned short acl_cutoff_40p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x106,  0x111,       	
+	0x11A,  0x120,  0x125,  0x129,       	
+	0x12D,  0x130,  0x133,  0x135,
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_43p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x107,  0x112,       	
+	0x11C,  0x123,  0x129,  0x12D,       	
+	0x131,  0x134,  0x137,  0x13A,
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+
+const unsigned short acl_cutoff_45p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x107,  0x113,       	
+	0x11E,  0x125,  0x12B,  0x130,       	
+	0x134,  0x137,  0x13A,  0x13D,
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_47p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x107,  0x114,       	
+	0x120,  0x128,  0x12E,  0x133,       	
+	0x137,  0x13B,  0x13E,  0x141,
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_48p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x108,  0x115,
+	0x120,  0x129,  0x12F,  0x134,       	
+	0x139,  0x13D,  0x140,  0x143,
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_50p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x108,  0x116,       	
+	0x122,  0x12B,  0x131,  0x137,       	
+	0x13B,  0x13F,  0x143,  0x146,	
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+// 55
+const unsigned short acl_cutoff_55p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x109,  0x118,       	
+	0x126,  0x12F,  0x137,  0x13D,       	
+	0x142,  0x147,  0x14A,  0x14E,	
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_60p[] = {	
+	0x0F0,	
+	0x15A,	
+	0x15A,	
+	
+	// ACL parameter set	
+	0x0C1,	
+	0x14D,	0x196,	0x11D,	
+	0x100,	0x100,	0x101,	0x1DF,	
+	0x100,	0x100,	0x103,	0x11F,	
+	0x100,  0x100,  0x100,  0x100,
+	0x100,  0x101,  0x10A,  0x11B,
+	0x12A,  0x135,  0x13D,  0x144,
+	0x14A,  0x14F,  0x153,  0x157,
+	
+	0x0C0,
+	0x101,	
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_65p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x10B,  0x11E,       	
+	0x12F,  0x13B,  0x144,  0x14C,       	
+	0x152,  0x158,  0x15D,  0x161,	
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+// 70
+const unsigned short acl_cutoff_70p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x10C,  0x121,       	
+	0x134,  0x141,  0x14B,  0x153,       	
+	0x15B,  0x161,  0x166,  0x16B,
+	
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_75p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x10D,  0x124,       	
+	0x139,  0x147,  0x153,  0x15C,       	
+	0x164,  0x16B,  0x171,  0x176,	
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_80p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x10E,  0x128,       	
+	0x13F,  0x14F,  0x15C,  0x166,       	
+	0x16F,  0x176,  0x17D,  0x183,	
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+const unsigned short acl_cutoff_85p[] = {
+	0x0F0,
+	0x15A,
+	0x15A,
+
+	// ACL parameter set
+	0x0C1,
+	0x14D,	0x196,	0x11D,
+	0x100,	0x100,	0x101,	0x1DF,
+	0x100,	0x100,	0x103,	0x11F,
+	0x100,  0x100,  0x100,  0x100,       	
+	0x100,  0x101,  0x110,  0x12D,       	
+	0x147,  0x159,  0x167,  0x173,       	
+	0x17C,  0x185,  0x18C,  0x193,	
+
+	0x0C0,
+	0x101,
+	ENDDEF, 0x0000
+};
+
+
+
+const unsigned short *ACL_cutoff_set[] = {
+	acl_cutoff_off, //0
+	acl_cutoff_8p,
+	acl_cutoff_14p,
+	acl_cutoff_20p,
+	acl_cutoff_24p,
+	acl_cutoff_28p, //5
+	acl_cutoff_32p,
+	acl_cutoff_35p,
+	acl_cutoff_37p,
+	acl_cutoff_40p, //9
+	acl_cutoff_45p, //10
+	acl_cutoff_47p, //11
+	acl_cutoff_48p, //12
+	acl_cutoff_50p, //13
+	acl_cutoff_60p, //14
+	acl_cutoff_75p, //15
+	acl_cutoff_43p, //16
+};
+#endif
 #endif
 
 
@@ -2754,6 +2735,7 @@ void tl2796_ldi_disable(void)
 	s6e63m0_panel_send_sequence(s6e63m0_SEQ_DISPLAY_OFF);
 
 	SetLDIEnabledFlag(0);
+	cur_acl = 0;
 	printk(KERN_DEBUG "LDI disable ok\n");
 	dev_dbg(lcd.lcd_dev,"%s::%d -> ldi disabled\n",__func__,__LINE__);	
 }
@@ -2810,6 +2792,7 @@ void bl_update_status_22gamma(int bl)
 	{
 		gprintk("#################22gamma start##########################\n");
 		s6e63m0_panel_send_sequence(p22Gamma_set[current_gamma_value]);
+		s6e63m0_panel_send_sequence(gamma_update); //gamma update
 		gprintk("#################22gamma end##########################\n");
 	}
 
@@ -2838,6 +2821,7 @@ void bl_update_status_19gamma(int bl)
 	{
 		gprintk("#################19gamma start##########################\n");
 		s6e63m0_panel_send_sequence(p19Gamma_set[current_gamma_value]);
+		s6e63m0_panel_send_sequence(gamma_update); //gamma update
 		gprintk("#################19gamma end##########################\n");
 	}
 
@@ -2908,7 +2892,7 @@ static ssize_t aclset_file_cmd_store(struct device *dev, struct device_attribute
 		printk(KERN_DEBUG "[acl set] return because LDI is disabled, input value = %d \n",value);
 		return size;
 	}
-
+#if 0
 	if(value==1 && acl_enable == 0)
 	{		
 		acl_enable = value;
@@ -2953,6 +2937,58 @@ static ssize_t aclset_file_cmd_store(struct device *dev, struct device_attribute
 			//printk(" ACL_cutoff_set Percentage : 40!!\n");
 		}
 	}
+#else
+	if(value==1 && acl_enable == 0)
+	{		
+		acl_enable = value;
+		
+		s6e63m0_panel_send_sequence(acl_cutoff_init);
+		msleep(20);
+	
+		if (current_gamma_value >=0 && current_gamma_value <= 1)
+		{
+			s6e63m0_panel_send_sequence(ACL_cutoff_set[0]); //set 0% ACL
+			cur_acl = 0;
+			//printk(" ACL_cutoff_set Percentage : 0!!\n");
+		}
+		else if(current_gamma_value >=2 && current_gamma_value <= 12)
+		{
+			s6e63m0_panel_send_sequence(ACL_cutoff_set[9]); //set 40% ACL
+			cur_acl = 40;
+			//printk(" ACL_cutoff_set Percentage : 40!!\n");
+		}
+		else if(current_gamma_value ==13)
+		{
+			s6e63m0_panel_send_sequence(ACL_cutoff_set[16]); //set 43% ACL
+			cur_acl = 43;
+			//printk(" ACL_cutoff_set Percentage : 43!!\n");
+		}
+		else if(current_gamma_value ==14)
+		{
+			s6e63m0_panel_send_sequence(ACL_cutoff_set[10]); //set 45% ACL
+			cur_acl = 45;
+			//printk(" ACL_cutoff_set Percentage : 45!!\n");
+		}
+		else if(current_gamma_value ==15)
+		{
+			s6e63m0_panel_send_sequence(ACL_cutoff_set[11]); //set 47% ACL
+			cur_acl = 47;
+			//printk(" ACL_cutoff_set Percentage : 47!!\n");
+		}
+		else if(current_gamma_value ==16)
+		{
+			s6e63m0_panel_send_sequence(ACL_cutoff_set[12]); //set 48% ACL
+			cur_acl = 48;
+			//printk(" ACL_cutoff_set Percentage : 48!!\n");
+		}
+		else 
+		{
+			s6e63m0_panel_send_sequence(ACL_cutoff_set[13]); //set 50% ACL
+			cur_acl = 50;
+			//printk(" ACL_cutoff_set Percentage : 50!!\n");
+		}
+	}
+#endif
 	else if(value==0 && acl_enable == 1)
 	{
 		acl_enable = value;
@@ -3070,15 +3106,16 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 				case  2:
 				case  1: //dimming
 				{	
-					if(on_19gamma)
-						s6e63m0_panel_send_sequence(p19Gamma_set[0]);
-					else
-						s6e63m0_panel_send_sequence(p22Gamma_set[0]);
-
-				
 				#ifdef ACL_ENABLE
 					if (acl_enable)
 					{
+					#if 0
+						if (cur_acl == 0)
+						{
+							s6e63m0_panel_send_sequence(acl_cutoff_init);
+							msleep(20);
+						}
+					#endif	
 						if (cur_acl != 0)
 						{
 							s6e63m0_panel_send_sequence(ACL_cutoff_set[0]); //set 0% ACL
@@ -3087,15 +3124,26 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 						}
 					}
 				#endif
+
+					if(on_19gamma)
+						s6e63m0_panel_send_sequence(p19Gamma_set[0]);
+					else
+						s6e63m0_panel_send_sequence(p22Gamma_set[0]);
+
 					gprintk("call s5p_bl_update_status level : %d\n",level);
 					break;
 				}
 				case  6:
 				{								
-				#ifdef ACL_ENABLE
+					if(on_19gamma)
+						s6e63m0_panel_send_sequence(p19Gamma_set[gamma_value]);
+					else
+						s6e63m0_panel_send_sequence(p22Gamma_set[gamma_value]);
+
+#ifdef ACL_ENABLE
 					if (acl_enable)
-					{				
-						if (gamma_value ==1)
+					{							
+						if (gamma_value == 1)
 						{
 							if (cur_acl != 0)
 							{
@@ -3112,66 +3160,71 @@ static int s5p_bl_update_status(struct backlight_device* bd)
 								msleep(20);
 							}
 							
-							if(gamma_value ==2)
+							if(gamma_value >=2 && gamma_value <=12) 
 							{
-								if (cur_acl != 12)
+								if (cur_acl != 40)
 								{
-									s6e63m0_panel_send_sequence(ACL_cutoff_set[1]); //set 12% ACL
-									cur_acl = 12;
-									gprintk(" ACL_cutoff_set Percentage : 12!!\n");
-								}
-							}
-							else if(gamma_value ==3)
-							{
-								if (cur_acl != 22)
-								{
-									s6e63m0_panel_send_sequence(ACL_cutoff_set[2]); //set 22% ACL
-									cur_acl = 22;
-									gprintk(" ACL_cutoff_set Percentage : 22!!\n");
-								}
-							}
-							else if(gamma_value ==4)
-							{
-								if (cur_acl != 30)
-								{
-									s6e63m0_panel_send_sequence(ACL_cutoff_set[3]); //set 30% ACL
-									cur_acl = 30;
-									gprintk(" ACL_cutoff_set Percentage : 30!!\n");
-								}
-							}
-							else if(gamma_value ==5)
-							{
-								if (cur_acl != 35)
-								{
-									s6e63m0_panel_send_sequence(ACL_cutoff_set[4]); //set 35% ACL
-									cur_acl = 35;
-									gprintk(" ACL_cutoff_set Percentage : 35!!\n");
-								}
-							}
-							else
-							{
-								if(cur_acl !=40)
-								{
-									s6e63m0_panel_send_sequence(ACL_cutoff_set[5]); //set 40% ACL
+									s6e63m0_panel_send_sequence(ACL_cutoff_set[9]); //set 40% ACL
 									cur_acl = 40;
 									gprintk(" ACL_cutoff_set Percentage : 40!!\n");
 								}
 							}
+							else if(gamma_value == 13) 
+							{
+								if(cur_acl !=43)
+								{
+									s6e63m0_panel_send_sequence(ACL_cutoff_set[16]); //set 43% ACL
+									cur_acl = 43;
+									gprintk(" ACL_cutoff_set Percentage : 43!!\n");
+								}
+							}
+							else if(gamma_value == 14) 
+							{
+								if(cur_acl !=45)
+								{
+									s6e63m0_panel_send_sequence(ACL_cutoff_set[10]); //set 45% ACL
+									cur_acl = 45;
+									gprintk(" ACL_cutoff_set Percentage : 45!!\n");
+								}
+							}
+							else if(gamma_value == 15) 
+							{
+								if(cur_acl !=47)
+								{
+									s6e63m0_panel_send_sequence(ACL_cutoff_set[11]); //set 47% ACL
+									cur_acl = 47;
+									gprintk(" ACL_cutoff_set Percentage : 47!!\n");
+								}
+							}
+							else if(gamma_value == 16) 
+							{
+								if(cur_acl !=48)
+								{
+									s6e63m0_panel_send_sequence(ACL_cutoff_set[12]); //set 48% ACL
+									cur_acl = 48;
+									gprintk(" ACL_cutoff_set Percentage : 48!!\n");
+								}
+							}
+							else
+							{
+								if(cur_acl !=50)
+								{
+									s6e63m0_panel_send_sequence(ACL_cutoff_set[13]); //set 50% ACL
+									cur_acl = 50;
+									gprintk(" ACL_cutoff_set Percentage : 50!!\n");
+								}
+							}	
 						}
 					}
-				#endif		
-	
-					if(on_19gamma)
-						s6e63m0_panel_send_sequence(p19Gamma_set[gamma_value]);
-					else
-						s6e63m0_panel_send_sequence(p22Gamma_set[gamma_value]);
-
+#endif
 					gprintk("#################backlight end##########################\n");
 					
 					break;
 				}
 			}
 			
+			s6e63m0_panel_send_sequence(gamma_update); //gamma update
+					
 			current_gamma_value = gamma_value;
 		}
 	}
