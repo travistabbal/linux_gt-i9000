@@ -5362,6 +5362,7 @@ typedef struct
 #define MAX_USING_FINGER_NUM	5
 
 static report_finger_info_t fingerInfo[MAX_USING_FINGER_NUM]={0};
+static int qt_initial_ok=0;
 #endif
 
 #ifdef QT_STYLUS_ENABLE
@@ -8244,12 +8245,16 @@ EXPORT_SYMBOL(set_tsp_for_ta_detect);
 void TSP_forced_release(void)
 {
 	int i=1;
+	int temp_value=0;
+
+	if (qt_initial_ok == 0)
+		return;
 
 	for ( i= 1; i<MAX_USING_FINGER_NUM; ++i )
 	{
 		if ( fingerInfo[i].pressure == -1 ) continue;
 
-		fingerInfo[i].pressure == 0;
+		fingerInfo[i].pressure = 0;
 
 		input_report_abs(qt602240->input_dev, ABS_MT_POSITION_X, fingerInfo[i].x);
 		input_report_abs(qt602240->input_dev, ABS_MT_POSITION_Y, fingerInfo[i].y);
@@ -8258,10 +8263,41 @@ void TSP_forced_release(void)
 		input_mt_sync(qt602240->input_dev);
 
 		if ( fingerInfo[i].pressure == 0 ) fingerInfo[i].pressure= -1;
+		temp_value++;
 	}
+	if(temp_value>0)
 	input_sync(qt602240->input_dev);
 }
 EXPORT_SYMBOL(TSP_forced_release);
+
+void TSP_forced_release_forOKkey(void)
+{
+	int i=0;
+	int temp_value=0;
+
+	if (qt_initial_ok == 0)
+		return;
+	
+	for ( i; i<MAX_USING_FINGER_NUM; ++i )
+	{
+		if ( fingerInfo[i].pressure == -1 ) continue;
+
+		fingerInfo[i].pressure = 0;
+
+		input_report_abs(qt602240->input_dev, ABS_MT_POSITION_X, fingerInfo[i].x);
+		input_report_abs(qt602240->input_dev, ABS_MT_POSITION_Y, fingerInfo[i].y);
+		input_report_abs(qt602240->input_dev, ABS_MT_TOUCH_MAJOR, fingerInfo[i].pressure);	// 0이면 Release, 아니면 Press 상태(Down or Move)
+		input_report_abs(qt602240->input_dev, ABS_MT_WIDTH_MAJOR, fingerInfo[i].size_id);	// (ID<<8) | Size
+		input_mt_sync(qt602240->input_dev);
+
+		if ( fingerInfo[i].pressure == 0 ) fingerInfo[i].pressure= -1;
+		temp_value++;
+	}
+	if(temp_value>0)
+		input_sync(qt602240->input_dev);
+}
+
+EXPORT_SYMBOL(TSP_forced_release_forOKkey);
 
 void  get_message(struct work_struct * p)
 {
@@ -8914,6 +8950,8 @@ int qt602240_probe(struct platform_device *dev)
 	register_early_suspend(&qt602240->early_suspend);
 #endif	/* CONFIG_HAS_EARLYSUSPEND */
 #endif //USE_TS_EARLY_SUSPEND
+
+	qt_initial_ok = 1;
 	return 0;
 
 err_input_register_device_failed:

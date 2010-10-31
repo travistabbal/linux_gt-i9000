@@ -253,7 +253,25 @@ static irqreturn_t s3c_keygpio_vol_up_isr(int irq, void *dev_id)
         return IRQ_HANDLED;
 }
 
-#if 0
+//EINT26
+static irqreturn_t s3c_keygpio_vol_up26_isr(int irq, void *dev_id)
+{
+	unsigned int key_status;
+	struct s3c_keypad *pdata = (struct s3c_keypad *)dev_id;
+	struct input_dev *dev = pdata->dev;
+
+	key_status = (readl(S5PC11X_GPH3DAT)) & ((1 << 2));
+	
+	if(key_status == ( (1 << 2)))
+		input_report_key(dev,42,0);
+	else
+		input_report_key(dev,42,1);
+
+       printk(KERN_DEBUG "s3c_keygpio_vol_up26_isr key_status =%d,\n", key_status);
+       
+        return IRQ_HANDLED;
+}
+
 static irqreturn_t s3c_keygpio_vol_down_isr(int irq, void *dev_id)
 {
 	unsigned int key_status;
@@ -268,10 +286,12 @@ static irqreturn_t s3c_keygpio_vol_down_isr(int irq, void *dev_id)
 	else
 		input_report_key(dev,58,1);
 
+	printk(KERN_DEBUG "s3c_keygpio_vol_down_isr key_status =%d,\n", key_status);
+	
         return IRQ_HANDLED;
 }
-#endif
 
+extern void TSP_forced_release_forOKkey(void);
 static irqreturn_t s3c_keygpio_ok_isr(int irq, void *dev_id)
 {
 	unsigned int key_status;
@@ -280,8 +300,10 @@ static irqreturn_t s3c_keygpio_ok_isr(int irq, void *dev_id)
 
 	//we cannot check HWREV 0xb and 0xc, we check 2 hw key
 	key_status = (readl(S5PC11X_GPH3DAT)) & ((1 << 5));
-	if(key_status == ((1 << 5)))
+	if(key_status == ((1 << 5))){
+		TSP_forced_release_forOKkey();
 		input_report_key(dev,50,0);
+		}
 	else
 		input_report_key(dev,50,1);
 
@@ -298,40 +320,43 @@ static int s3c_keygpio_isr_setup(void *pdev)
 
 	if(HWREV >= 0xB)
 	{
-		#if 0
-		//volume down
-		s3c_gpio_setpull(S5PC11X_GPH3(1), S3C_GPIO_PULL_UP);
-		set_irq_type(IRQ_EINT(25), IRQ_TYPE_EDGE_BOTH);
-	        ret = request_irq(IRQ_EINT(25), s3c_keygpio_vol_down_isr, IRQF_SAMPLE_RANDOM,
-	                "key vol down", (void *) pdev);
-	        if (ret) {
-	                printk("request_irq failed (IRQ_KEYPAD (key vol down)) !!!\n");
-	                ret = -EIO;
-			  return ret;
-	        }
-		
-		//volume up
-		s3c_gpio_setpull(S5PC11X_GPH3(2), S3C_GPIO_PULL_UP);
-		set_irq_type(IRQ_EINT(26), IRQ_TYPE_EDGE_BOTH);
-	        ret = request_irq(IRQ_EINT(26), s3c_keygpio_vol_up_isr, IRQF_SAMPLE_RANDOM,
-	                "key vol up", (void *) pdev);
-	        if (ret) {
-	                printk("request_irq failed (IRQ_KEYPAD (key vol up)) !!!\n");
-	                ret = -EIO;
-			  return ret;
-	        }
-		#endif
-		
-		//volume up
-		s3c_gpio_setpull(S5PC11X_GPH3(3), S3C_GPIO_PULL_UP);
-		set_irq_type(IRQ_EINT(27), IRQ_TYPE_EDGE_BOTH);
-	        ret = request_irq(IRQ_EINT(27), s3c_keygpio_vol_up_isr, IRQF_SAMPLE_RANDOM,
-	                "key vol up", (void *) pdev);
-	        if (ret) {
-	                printk("request_irq failed (IRQ_KEYPAD (key vol up)) !!!\n");
-	                ret = -EIO;
-			  return ret;
-	        }
+		if(HWREV >= 0xe)
+		{
+			//volume down
+			s3c_gpio_setpull(S5PC11X_GPH3(1), S3C_GPIO_PULL_UP);
+			set_irq_type(IRQ_EINT(25), IRQ_TYPE_EDGE_BOTH);
+			ret = request_irq(IRQ_EINT(25), s3c_keygpio_vol_down_isr, IRQF_SAMPLE_RANDOM,
+			    "key vol down", (void *) pdev);
+			if (ret) {
+				printk("request_irq failed (IRQ_KEYPAD (key vol down)) !!!\n");
+				ret = -EIO;
+				return ret;
+			}
+
+			//volume up
+			s3c_gpio_setpull(S5PC11X_GPH3(2), S3C_GPIO_PULL_UP);
+			set_irq_type(IRQ_EINT(26), IRQ_TYPE_EDGE_BOTH);
+			ret = request_irq(IRQ_EINT(26), s3c_keygpio_vol_up26_isr, IRQF_SAMPLE_RANDOM,
+			        "key vol up(26)", (void *) pdev);
+			if (ret) {
+				printk("request_irq failed (IRQ_KEYPAD (key vol up(26))) !!!\n");
+				ret = -EIO;
+				return ret;
+			}
+		}
+		else
+		{
+			//volume up
+			s3c_gpio_setpull(S5PC11X_GPH3(3), S3C_GPIO_PULL_UP);
+			set_irq_type(IRQ_EINT(27), IRQ_TYPE_EDGE_BOTH);
+		        ret = request_irq(IRQ_EINT(27), s3c_keygpio_vol_up_isr, IRQF_SAMPLE_RANDOM,
+		                "key vol up", (void *) pdev);
+		        if (ret) {
+		                printk("request_irq failed (IRQ_KEYPAD (key vol up)) !!!\n");
+		                ret = -EIO;
+				  return ret;
+		        }
+		}
 
 		//ok key
 		s3c_gpio_setpull(S5PC11X_GPH3(5), S3C_GPIO_PULL_UP);
@@ -501,21 +526,25 @@ static int __init s3c_keypad_probe(struct platform_device *pdev)
 		ret = -ENOENT;
 		goto err_irq;
 	}
-	ret = request_irq(keypad_irq->start, s3c_keypad_isr, IRQF_SAMPLE_RANDOM,
-		DEVICE_NAME, (void *) pdev);
-	if (ret) {
-		printk("request_irq failed (IRQ_KEYPAD) !!!\n");
-		ret = -EIO;
-		goto err_irq;
-	}
+	
+	if(HWREV < 0xe)
+	{
+		ret = request_irq(keypad_irq->start, s3c_keypad_isr, IRQF_SAMPLE_RANDOM,
+			DEVICE_NAME, (void *) pdev);
+		if (ret) {
+			printk("request_irq failed (IRQ_KEYPAD) !!!\n");
+			ret = -EIO;
+			goto err_irq;
+		}
 
-	keypad_timer.expires = jiffies + (HZ/10);
+		keypad_timer.expires = jiffies + (HZ/10);
 
-	if (is_timer_on == FALSE) {
-		add_timer(&keypad_timer);
-		is_timer_on = TRUE;
-	} else {
-		mod_timer(&keypad_timer,keypad_timer.expires);
+		if (is_timer_on == FALSE) {
+			add_timer(&keypad_timer);
+			is_timer_on = TRUE;
+		} else {
+			mod_timer(&keypad_timer,keypad_timer.expires);
+		}
 	}
 
 	s3c_keygpio_isr_setup((void *)s3c_keypad);
