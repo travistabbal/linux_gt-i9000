@@ -827,8 +827,8 @@ static int ce147_load_fw(struct v4l2_subdev *sd)
         if(err < 0)
                 return -EIO;
 
-        /* At least 700ms delay required to load the firmware for ce147 camera ISP */
-        msleep(700);
+        /* At least 800ms delay required to load the firmware for ce147 camera ISP */
+        msleep(800); // This is modified from 700ms to 800ms by STW
 
 	state->runmode = CE147_RUNMODE_IDLE;
 
@@ -2017,13 +2017,13 @@ static int ce147_set_capture_exif(struct v4l2_subdev *sd)
 
 	unsigned char ce147_model_name[130] = {0x00,};
 	unsigned int ce147_reglen_model = 130;	
-	unsigned char ce147_str_model[9] = "GT-I9000";
+	unsigned char ce147_str_model[9] = "GT-I9000\0";
 
 	struct timeval curr_time;
 	struct rtc_time time;
 
 	ce147_model_name[0] = 0x06;
-	ce147_model_name[1] = 0x08;
+	ce147_model_name[1] = 0x09;
 
 	memcpy(ce147_model_name+2, ce147_str_model, sizeof(ce147_str_model));	
 
@@ -3035,7 +3035,7 @@ static int ce147_set_face_detection(struct v4l2_subdev *sd, struct v4l2_control 
 		break;
 
 		case FACE_DETECTION_ON_BEAUTY:
-			ce147_buf_set_fd[0] = 0x80;
+			ce147_buf_set_fd[0] = 0x01;
 			ce147_buf_set_fd[1] = 0x01;
 			ce147_buf_set_fd[2] = 0x0A;
 		break;
@@ -3699,18 +3699,22 @@ static int ce147_set_face_lock(struct v4l2_subdev *sd, struct v4l2_control *ctrl
 	int err;
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
-	unsigned char ce147_buf_set_fd_lock[1] = { 0x02 };
+	unsigned char ce147_buf_set_fd_lock[1] = { 0x00 };
 	unsigned int ce147_len_set_fd_lock = 1;
 	
 	switch(ctrl->value) 
 	{
-		case FACE_DETECTION_ON:
+		case FACE_LOCK_ON:
 			ce147_buf_set_fd_lock[0] = 0x01;
 		break;
 
-		case FACE_DETECTION_OFF:
-		default:
+		case FIRST_FACE_TRACKING:
 			ce147_buf_set_fd_lock[0] = 0x02;
+		break;
+
+		case FACE_LOCK_OFF:
+		default:
+			ce147_buf_set_fd_lock[0] = 0x00;
 		break;
 	}
 	
