@@ -1,0 +1,10 @@
+This is a open source code for Eclair(Android 2.1) update version of GT-I9000.
+
+There are several GT-I9000's Eclair update version(MR - Maintenance Release).
+ - JM1 ~ JMx, JPx..etc. (version name may be different for country)
+
+But, In case of Open source code, Changes are same in whole MR version of GT-I9000.
+
+The open source codes to be open here are only the differences - kernel part.
+Platform code is the same as that first publishing version .
+(GT-I9000_OpenSource.zip > GalaxyS_eclair.tar.gz)
