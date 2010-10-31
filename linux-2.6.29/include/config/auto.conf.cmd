@@ -44,6 +44,9 @@ deps_config := \
 	fs/ecryptfs/Kconfig \
 	fs/affs/Kconfig \
 	fs/adfs/Kconfig \
+	fs/rfs/Kconfig.native \
+	fs/rfs/Kconfig.debug \
+	fs/rfs/Kconfig \
 	fs/configfs/Kconfig \
 	fs/sysfs/Kconfig \
 	fs/proc/Kconfig \
@@ -333,6 +336,7 @@ deps_config := \
 	drivers/pnp/Kconfig \
 	drivers/parport/Kconfig \
 	drivers/tfsr/Kconfig \
+	drivers/fsr/Kconfig \
 	drivers/mtd/ubi/Kconfig.debug \
 	drivers/mtd/ubi/Kconfig \
 	drivers/mtd/lpddr/Kconfig \
