@@ -838,8 +838,7 @@ void s3c_udc_ep_set_stall(struct s3c_ep *ep)
 
 		/* set the stall bit */
 		ep_ctrl |= DEPCTL_STALL;
-		ep_ctrl = readl(S3C_UDC_OTG_DIEPCTL(ep_num));
-
+		
 		writel(ep_ctrl, S3C_UDC_OTG_DOEPCTL(ep_num));
 		DEBUG("%s: set stall, DOEPCTL%d = 0x%x\n",
 			__func__, ep_num, readl(S3C_UDC_OTG_DOEPCTL(ep_num)));
@@ -873,8 +872,9 @@ void s3c_udc_ep_clear_stall(struct s3c_ep *ep)
 			ep_ctrl |= DEPCTL_SETD0PID; /* DATA0 */
 		}
 
-		writel(ep_ctrl, S3C_UDC_OTG_DIEPCTL(ep_num));
-		DEBUG("%s: cleared stall, DIEPCTL%d = 0x%x\n",
+		printk("ep_ctrl  = 0x%x\n", ep_ctrl);
+writel(ep_ctrl, S3C_UDC_OTG_DIEPCTL(ep_num));
+		printk("%s: cleared stall, DIEPCTL%d = 0x%x\n",
 			__func__, ep_num, readl(S3C_UDC_OTG_DIEPCTL(ep_num)));
 
 	} else {

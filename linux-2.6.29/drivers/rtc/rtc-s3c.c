@@ -620,8 +620,8 @@ static int __devinit s3c_rtc_probe(struct platform_device *pdev)
 
 	rtc->max_user_freq = S3C_MAX_CNT;
 
-	/* default year = 2010 */
-	if (tm.tm_year < 110)
+	/* Check invalid year (1970~2038) */
+	if ((tm.tm_year < 70) || (tm.tm_year > 138))
 	{
 		tm.tm_sec = 0;
 		tm.tm_min = 0;

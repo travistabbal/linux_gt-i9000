@@ -898,8 +898,17 @@ void mmc_stop_host(struct mmc_host *host)
 	mmc_power_off(host);
 }
 
+void mmc_card_adjust_cfg(struct mmc_host *host, int rw)
+{
+	if(host->ops->adjust_cfg)
+		host->ops->adjust_cfg(host, rw);
+}
+EXPORT_SYMBOL(mmc_card_adjust_cfg);
+
 #ifdef CONFIG_PM
 
+int is_mmc_resume = 0;
+EXPORT_SYMBOL(is_mmc_resume);
 /**
  *	mmc_suspend_host - suspend a host
  *	@host: mmc host
@@ -929,6 +938,7 @@ int mmc_suspend_host(struct mmc_host *host, pm_message_t state)
 
 	if (host->skip_pwrmgt == 1) {
 		printk("mmc%d:mmc_suspend_host: skip mmc_power_off()\n", host->index);
+		is_mmc_resume = 1;
 	} else {
 		mmc_power_off(host);
 	}
@@ -964,6 +974,7 @@ int mmc_resume_host(struct mmc_host *host)
 	if (host->skip_pwrmgt != 1) {
 		mmc_detect_change(host, 1);
 	}
+	is_mmc_resume = 0;
 
 	return 0;
 }

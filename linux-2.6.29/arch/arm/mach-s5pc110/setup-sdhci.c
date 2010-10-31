@@ -106,7 +106,7 @@ void s3c6410_setup_sdhci0_cfg_card(struct platform_device *dev,
 
 		ctrl2 |= S3C_SDHCI_CTRL2_ENFBCLKTX | S3C_SDHCI_CTRL2_ENFBCLKRX;
 
-		if (card->type & MMC_TYPE_MMC)	/* MMC */
+		if (card->type == MMC_TYPE_MMC)	/* MMC */
 			range_start = 20 * 1000 * 1000;
 		else	/* SD, SDIO */
 			range_start = 25 * 1000 * 1000;
@@ -119,6 +119,52 @@ void s3c6410_setup_sdhci0_cfg_card(struct platform_device *dev,
 		else
 			ctrl3 = S3C_SDHCI_CTRL3_FCSELTX_BASIC |
 				S3C_SDHCI_CTRL3_FCSELRX_INVERT;
+	}
+
+	writel(ctrl2, r + S3C_SDHCI_CONTROL2);
+	writel(ctrl3, r + S3C_SDHCI_CONTROL3);
+}
+
+void s3c6410_adjust_sdhci_cfg_card(struct s3c_sdhci_platdata *pdata, void __iomem *r, int rw)
+{
+	u32 ctrl2, ctrl3;
+
+	ctrl2 = readl(r + S3C_SDHCI_CONTROL2);
+	ctrl3 = readl(r + S3C_SDHCI_CONTROL3);
+
+	if(rw == 0) {
+		pdata->rx_cfg++;
+		if(pdata->rx_cfg == 1) {
+			ctrl2 |= S3C_SDHCI_CTRL2_ENFBCLKRX;
+			ctrl3 |= S3C_SDHCI_CTRL3_FCSELRX_BASIC;
+		}
+		else if(pdata->rx_cfg == 2) {
+			ctrl2 |= S3C_SDHCI_CTRL2_ENFBCLKRX;
+			ctrl3 &= ~S3C_SDHCI_CTRL3_FCSELRX_BASIC;
+		}
+		else if(pdata->rx_cfg == 3) {
+			ctrl2 &= ~(S3C_SDHCI_CTRL2_ENFBCLKTX | S3C_SDHCI_CTRL2_ENFBCLKRX);
+			pdata->rx_cfg = 0;
+		}
+	}
+	else if(rw == 1) {
+		pdata->tx_cfg++;
+		if(pdata->tx_cfg == 1) {
+			if(ctrl2 & S3C_SDHCI_CTRL2_ENFBCLKRX) {
+				ctrl2 |= S3C_SDHCI_CTRL2_ENFBCLKTX;
+				ctrl3 |= S3C_SDHCI_CTRL3_FCSELTX_BASIC;
+			}
+			else
+				ctrl2 &= ~S3C_SDHCI_CTRL2_ENFBCLKTX;
+		}
+		else if(pdata->tx_cfg == 2) {
+			ctrl2 &= ~S3C_SDHCI_CTRL2_ENFBCLKTX;
+			pdata->tx_cfg = 0;
+		}
+	}
+	else {
+		printk(KERN_ERR "%s, unknown value rw:%d\n", __func__, rw);
+		return;
 	}
 
 	writel(ctrl2, r + S3C_SDHCI_CONTROL2);

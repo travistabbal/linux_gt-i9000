@@ -288,6 +288,7 @@ struct sdhci_ops {
 	void		(*set_ios)(struct sdhci_host *host,
 				   struct mmc_ios *ios);
 	int			(*get_cd)(struct sdhci_host *host);
+	void		(*adjust_cfg)(struct sdhci_host *host, int rw);
 };
 
 

@@ -744,6 +744,28 @@ dhd_op_if(dhd_if_t *ifp)
 	}
 }
 
+static volatile int deepsleep_lock = 0;
+
+void 
+dhd_os_deepsleep_block(void)
+{
+	deepsleep_lock = 1;
+}
+
+void 
+dhd_os_deepsleep_unblock(void)
+{
+	deepsleep_lock = 0;
+}
+
+void 
+dhd_os_deepsleep_wait(void)
+{
+	while(deepsleep_lock) {
+		msleep(100);
+	}
+}
+
 static int
 _dhd_sysioc_thread(void *data)
 {
@@ -753,6 +775,8 @@ _dhd_sysioc_thread(void *data)
 	DAEMONIZE("dhd_sysioc");
 
 	while (down_interruptible(&dhd->sysioc_sem) == 0) {
+		dhd_os_deepsleep_wait();
+		dhd_os_deepsleep_block();
 		for (i = 0; i < DHD_MAX_IFS; i++) {
 			if (dhd->iflist[i]) {
 				if (dhd->iflist[i]->state)
@@ -767,6 +791,7 @@ _dhd_sysioc_thread(void *data)
 				}
 			}
 		}
+		dhd_os_deepsleep_unblock();
 	}
 	complete_and_exit(&dhd->sysioc_exited, 0);
 }
@@ -2249,6 +2274,10 @@ dhd_detach(dhd_pub_t *dhdp)
 
 			ifp = dhd->iflist[0];
 			ASSERT(ifp);
+#ifdef CONFIG_WIRELESS_EXT
+			/* Attach and link in the iw */
+			wl_iw_detach();
+#endif
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31))
 			if (ifp->net->open) {
 #else
@@ -2259,45 +2288,40 @@ dhd_detach(dhd_pub_t *dhdp)
 			}
 
 
-		if (dhd->watchdog_pid >= 0)
-		{
-			KILL_PROC(dhd->watchdog_pid, SIGTERM);
-			wait_for_completion(&dhd->watchdog_exited);
+			if (dhd->watchdog_pid >= 0)
+			{
+				KILL_PROC(dhd->watchdog_pid, SIGTERM);
+				wait_for_completion(&dhd->watchdog_exited);
+			}
+	
+			if (dhd->dpc_pid >= 0)
+			{
+				KILL_PROC(dhd->dpc_pid, SIGTERM);
+				wait_for_completion(&dhd->dpc_exited);
+			}
+			else
+			tasklet_kill(&dhd->tasklet);
+	
+			if (dhd->sysioc_pid >= 0) {
+				KILL_PROC(dhd->sysioc_pid, SIGTERM);
+				wait_for_completion(&dhd->sysioc_exited);
+			}
+	
+			dhd_bus_detach(dhdp);
+	
+			if (dhdp->prot)
+				dhd_prot_detach(dhdp);
+	
+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && defined(CONFIG_PM_SLEEP)
+			unregister_pm_notifier(&dhd_sleep_pm_notifier);
+	#endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && defined(CONFIG_PM_SLEEP) */
+			WAKE_LOCK_DESTROY(dhdp, WAKE_LOCK_TMOUT);
+			WAKE_LOCK_DESTROY(dhdp, WAKE_LOCK_LINK_DOWN_TMOUT);
+			free_netdev(ifp->net);
+			MFREE(dhd->pub.osh, ifp, sizeof(*ifp));
+			MFREE(dhd->pub.osh, dhd, sizeof(*dhd));
 		}
-
-		if (dhd->dpc_pid >= 0)
-		{
-			KILL_PROC(dhd->dpc_pid, SIGTERM);
-			wait_for_completion(&dhd->dpc_exited);
-		}
-		else
-		tasklet_kill(&dhd->tasklet);
-
-		if (dhd->sysioc_pid >= 0) {
-			KILL_PROC(dhd->sysioc_pid, SIGTERM);
-			wait_for_completion(&dhd->sysioc_exited);
-		}
-
-		dhd_bus_detach(dhdp);
-
-		if (dhdp->prot)
-			dhd_prot_detach(dhdp);
-
-#ifdef CONFIG_WIRELESS_EXT
-		/* Attach and link in the iw */
-		wl_iw_detach();
-#endif
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && defined(CONFIG_PM_SLEEP)
-		unregister_pm_notifier(&dhd_sleep_pm_notifier);
-#endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && defined(CONFIG_PM_SLEEP) */
-		WAKE_LOCK_DESTROY(dhdp, WAKE_LOCK_TMOUT);
-		WAKE_LOCK_DESTROY(dhdp, WAKE_LOCK_LINK_DOWN_TMOUT);
-		free_netdev(ifp->net);
-		MFREE(dhd->pub.osh, ifp, sizeof(*ifp));
-		MFREE(dhd->pub.osh, dhd, sizeof(*dhd));
 	}
-}
 }
 static void __exit
 dhd_module_cleanup(void)

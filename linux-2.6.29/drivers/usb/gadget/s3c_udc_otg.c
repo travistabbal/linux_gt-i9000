@@ -157,7 +157,7 @@ static void nuke(struct s3c_ep *ep, int status);
 static int s3c_udc_set_halt(struct usb_ep *_ep, int value);
 static void udc_reinit(struct s3c_udc *dev);
 int BOOTUP = 1; // Booting 중인지 아닌지 판단하는 변수, connectivity_switching_init 이 불린 후에 0로 세팅.
-
+static int g_clocked = 0;
 
 
 static struct usb_ep_ops s3c_ep_ops = {
@@ -353,6 +353,30 @@ int usb_gadget_register_driver(struct usb_gadget_driver *driver)
 
 EXPORT_SYMBOL(usb_gadget_register_driver);
 
+static void otg_clock_enable(int enable)
+{
+	if(enable) {
+		if(!g_clocked) {
+			clk_enable(otg_clock);
+			g_clocked = 1;
+			printk("[%s] clk_enable(otg_clock) OK.\n", __func__);
+		}
+		else {
+			printk("[%s] already clk_enabled.\n", __func__);
+		}
+	}
+	else {
+		if(g_clocked) {
+			clk_disable(otg_clock);
+			g_clocked = 0;
+			printk("[%s] clk_disable(otg_clock) OK.\n", __func__);
+		}
+		else {
+			printk("[%s] already clk_disabled\n", __func__);
+		}
+	}
+}
+
 int s3c_usb_cable(int connected)
 {
 	unsigned long flags;
@@ -363,13 +387,13 @@ int s3c_usb_cable(int connected)
 	     stop_activity(dev, dev->driver);
              spin_unlock_irqrestore(&dev->lock,flags);
              udc_disable(dev);
-             clk_disable(otg_clock);
+		otg_clock_enable(0);
   	     max8998_ldo_disable_direct(MAX8998_LDO3);
 	}
 	else{
   	     max8998_ldo_enable_direct(MAX8998_LDO3);
 		 mdelay(1);
-             clk_enable(otg_clock);
+		otg_clock_enable(1);
 			 printk("[s3c_usb_cable]done_clk_enable\n");
              udc_reinit(dev);
  			 printk("[s3c_usb_cable]done_udc_reinit\n");
@@ -1126,11 +1150,11 @@ static int s3c_udc_probe(struct platform_device *pdev)
 		printk(KERN_INFO "failed to find otg clock source\n");
 		return -ENOENT;
 	}
-	clk_enable(otg_clock);
+	otg_clock_enable(1);
 
 	udc_reinit(dev);
 
-	//local_irq_disable();
+//	local_irq_disable();
 
 	/* irq setup after old hardware state is cleaned up */
 	retval =
@@ -1145,12 +1169,12 @@ static int s3c_udc_probe(struct platform_device *pdev)
 	usb_status = readl(S3C_UDC_OTG_GOTGCTL);
 	
 	if(!((usb_status & 0xc0000) == (0x3 << 18))){
-		clk_disable(otg_clock);
+		otg_clock_enable(0);
 	} 	
 		
 
 
-	disable_irq(IRQ_OTG);
+//	disable_irq(IRQ_OTG);
 	//local_irq_enable();
 	create_proc_files();
 
@@ -1164,7 +1188,7 @@ static int s3c_udc_remove(struct platform_device *pdev)
 	DEBUG("%s: %p\n", __FUNCTION__, pdev);
 
 	if (otg_clock != NULL) {
-		clk_disable(otg_clock);
+		otg_clock_enable(0);
 		clk_put(otg_clock);
 		otg_clock = NULL;
 	}
@@ -1190,6 +1214,7 @@ static int s3c_udc_suspend(struct platform_device *pdev, pm_message_t state)
                 if (dev->driver->suspend)
                         dev->driver->suspend(&dev->gadget);
 
+#if 0
                 /* Terminate any outstanding requests  */
                 for (i = 0; i < S3C_MAX_ENDPOINTS; i++) {
                         struct s3c_ep *ep = &dev->ep[i];
@@ -1200,14 +1225,14 @@ static int s3c_udc_suspend(struct platform_device *pdev, pm_message_t state)
                         if ( ep->dev != NULL )
                                 spin_unlock(&ep->dev->lock);
                 }
-
 				mdelay(1);
                 disable_irq(IRQ_OTG);
 				mdelay(1);
                 udc_disable(dev);
 				mdelay(1);				
-                clk_disable(otg_clock);
+				otg_clock_enable(0);
 				mdelay(1);				
+#endif
         }
 
         return 0;
@@ -1218,10 +1243,12 @@ static int s3c_udc_resume(struct platform_device *pdev)
         struct s3c_udc *dev = the_controller;
 
         if (dev->driver) {
-                clk_enable(otg_clock);
+#if 0
+				otg_clock_enable(1);
                 udc_reinit(dev);
                 enable_irq(IRQ_OTG);
                 udc_enable(dev);
+#endif
 
                 if (dev->driver->resume)
                         dev->driver->resume(&dev->gadget);

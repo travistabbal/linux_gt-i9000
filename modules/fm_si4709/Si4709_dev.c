@@ -4,8 +4,11 @@
 #include <linux/mutex.h>
 #include <linux/delay.h>
 #include <linux/time.h>
+#include <linux/workqueue.h>
 
 #include <mach/gpio.h>
+#include <plat/gpio-cfg.h> 
+
 #include "Si4709_regs.h"
 #include "Si4709_main.h"
 #include "Si4709_dev.h"
@@ -147,6 +150,21 @@ int Si4709_dev_AFCRL_get(u8*);
 int Si4709_dev_DE_set(u8);
 /***********************************************/
 
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+#define RDS_BUFFER_LENGTH 50
+static u16 *RDS_Block_Data_buffer;
+static u8 *RDS_Block_Error_buffer;
+static u8 RDS_Buffer_Index_read;  //index number for last read data
+static u8 RDS_Buffer_Index_write; //index number for last written data
+
+int Si4709_RDS_flag;
+int RDS_Data_Available;
+int RDS_Data_Lost;
+int RDS_Groups_Available_till_now;
+struct workqueue_struct *Si4709_wq;
+struct work_struct Si4709_work;
+#endif
+
 /*static functions*/
 /**********************************************/
 static void wait(void);
@@ -181,6 +199,9 @@ static Si4709_device_t Si4709_dev =
 /*Wait flag*/
 /*WAITING or WAIT_OVER or NO_WAIT*/
 int Si4709_dev_wait_flag = NO_WAIT;
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+int Si4709_RDS_flag = NO_WAIT;
+#endif
 
 int Si4709_dev_init(struct i2c_client *client)
 {
@@ -197,6 +218,9 @@ int Si4709_dev_init(struct i2c_client *client)
     mdelay(1);
     gpio_set_value(FM_RESET, GPIO_LEVEL_HIGH);	
     mdelay(2);
+
+	s3c_gpio_setpull(GPIO_FM_INT, S3C_GPIO_PULL_UP);
+	s3c_gpio_slp_setpull_updown(GPIO_FM_INT, S3C_GPIO_PULL_UP);	
 										
     Si4709_dev.state.power_state = RADIO_POWERDOWN;
     Si4709_dev.state.seek_state = RADIO_SEEK_OFF;
@@ -209,6 +233,51 @@ int Si4709_dev_init(struct i2c_client *client)
     {
         Si4709_dev.valid_client_state = eTRUE;
     }
+	
+#ifdef RDS_INTERRUPT_ON_ALWAYS 
+	/*Creating Circular Buffer*/
+	/*Single RDS_Block_Data buffer size is 4x16 bits*/
+	RDS_Block_Data_buffer = kzalloc(RDS_BUFFER_LENGTH*8,GFP_KERNEL);  
+	if(!RDS_Block_Data_buffer)
+	{
+		error("Not sufficient memory for creating RDS_Block_Data_buffer");
+		ret = -ENOMEM;
+		goto EXIT;
+	}
+	
+	/*Single RDS_Block_Error buffer size is 4x8 bits*/	
+	RDS_Block_Error_buffer = kzalloc(RDS_BUFFER_LENGTH*4,GFP_KERNEL);  
+	if(!RDS_Block_Error_buffer)
+	{
+		error("Not sufficient memory for creating RDS_Block_Error_buffer");
+		ret = -ENOMEM;
+		kfree(RDS_Block_Data_buffer);
+		goto EXIT;
+	}
+    
+	/*Initialising read and write indices*/
+	RDS_Buffer_Index_read= 0;
+	RDS_Buffer_Index_write= 0;
+	
+	/*Creating work-queue*/
+	Si4709_wq = create_singlethread_workqueue("Si4709_wq");
+	if(!Si4709_wq)
+	{
+		error("Not sufficient memory for Si4709_wq, work-queue");
+		ret = -ENOMEM;
+		kfree(RDS_Block_Error_buffer);
+		kfree(RDS_Block_Data_buffer);
+		goto EXIT;
+	}
+  
+	/*Initialising work_queue*/
+	INIT_WORK(&Si4709_work, Si4709_work_func);
+	
+	RDS_Data_Available = 0;
+	RDS_Data_Lost =0;
+	RDS_Groups_Available_till_now = 0;
+EXIT:	
+#endif
     
     mutex_unlock(&(Si4709_dev.lock));   	 
 
@@ -231,6 +300,17 @@ int Si4709_dev_exit(void)
 
 //    Si4709_dev.valid_client_state = eFALSE;
 //    Si4709_dev.valid = eFALSE;
+
+#ifdef RDS_INTERRUPT_ON_ALWAYS 
+	if(Si4709_wq)
+		destroy_workqueue(Si4709_wq);
+	
+	if(RDS_Block_Error_buffer)
+		kfree(RDS_Block_Error_buffer);
+			
+	if(RDS_Block_Data_buffer)
+		kfree(RDS_Block_Data_buffer);
+#endif	
 
 	mutex_unlock(&(Si4709_dev.lock)); 
 
@@ -310,6 +390,15 @@ int Si4709_dev_powerup(void)
         else
         {
              Si4709_dev.valid = eTRUE;
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+			/*Initialising read and write indices*/
+			RDS_Buffer_Index_read= 0;
+			RDS_Buffer_Index_write= 0;
+				
+			RDS_Data_Available = 0;
+			RDS_Data_Lost =0;
+			RDS_Groups_Available_till_now = 0;
+#endif
         }
 
     }
@@ -1493,13 +1582,20 @@ int Si4709_dev_RDS_ENABLE(void)
     }
     else
     {
-     	   SYSCONFIG1_BITSET_RDS_HIGH(&Si4709_dev.registers[SYSCONFIG1]);
-		   SYSCONFIG1_BITSET_RESERVED( &Si4709_dev.registers[SYSCONFIG1] );	
-    	    if( (ret = i2c_write(SYSCONFIG1)) < 0 )
-         {
-            debug("Si4709_dev_RDS_ENABLE i2c_write failed");
-            Si4709_dev.registers[SYSCONFIG1] = sysconfig1;
-         }
+		SYSCONFIG1_BITSET_RDS_HIGH(&Si4709_dev.registers[SYSCONFIG1]);
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+		SYSCONFIG1_BITSET_RDSIEN_HIGH(&Si4709_dev.registers[SYSCONFIG1]);   
+#endif
+		SYSCONFIG1_BITSET_RESERVED( &Si4709_dev.registers[SYSCONFIG1] );	
+		if( (ret = i2c_write(SYSCONFIG1)) < 0 )
+		{
+			debug("Si4709_dev_RDS_ENABLE i2c_write failed");
+			Si4709_dev.registers[SYSCONFIG1] = sysconfig1;
+		}
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+		else		
+			Si4709_RDS_flag = RDS_WAITING;
+#endif
    	} 	   
 
     mutex_unlock(&(Si4709_dev.lock)); 
@@ -1527,13 +1623,20 @@ int Si4709_dev_RDS_DISABLE(void)
     }
     else
     {
-     	   SYSCONFIG1_BITSET_RDS_LOW(&Si4709_dev.registers[SYSCONFIG1]);
-		   SYSCONFIG1_BITSET_RESERVED( &Si4709_dev.registers[SYSCONFIG1] );
-         if( (ret = i2c_write(SYSCONFIG1)) < 0 )
-         {
-             debug("Si4709_dev_RDS_DISABLE i2c_write failed");
-             Si4709_dev.registers[SYSCONFIG1] = sysconfig1;
-         }
+		SYSCONFIG1_BITSET_RDS_LOW(&Si4709_dev.registers[SYSCONFIG1]);
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+		SYSCONFIG1_BITSET_RDSIEN_LOW(&Si4709_dev.registers[SYSCONFIG1]); 
+#endif
+		SYSCONFIG1_BITSET_RESERVED( &Si4709_dev.registers[SYSCONFIG1] );
+		if( (ret = i2c_write(SYSCONFIG1)) < 0 )
+		{
+			debug("Si4709_dev_RDS_DISABLE i2c_write failed");
+			Si4709_dev.registers[SYSCONFIG1] = sysconfig1;
+		}
+#ifdef RDS_INTERRUPT_ON_ALWAYS
+		else
+			Si4709_RDS_flag = NO_WAIT;
+#endif
    	} 	   
 
     mutex_unlock(&(Si4709_dev.lock)); 
@@ -1566,9 +1669,101 @@ int Si4709_dev_rstate_get(dev_state_t *dev_state)
     return ret;
 }
 
+
+/*VNVS:START 7-JUNE'10 Function call for work-queue "Si4709_wq"*/
+#ifdef RDS_INTERRUPT_ON_ALWAYS  
+void Si4709_work_func(struct work_struct *work)
+{	
+	int i,ret = 0;		
+#ifdef RDS_TESTING
+	u8 group_type;
+#endif
+	debug("%s",__func__);
+//	mutex_lock(&(Si4709_dev.lock)); 
+	
+	if( Si4709_dev.valid == eFALSE )
+    {
+        error("Si4709_dev_RDS_data_get called when DS is invalid");
+        ret = -1;   
+    }
+	else
+	{
+
+		if(RDS_Data_Lost > 1)
+			debug_rds("No_of_RDS_groups_Lost till now : %d",RDS_Data_Lost);
+			
+		
+		/*RDSR bit and RDS Block data, so reading the RDS registers*/	
+		if((ret = i2c_read(RDSD)) < 0)	
+			error("Si4709_work_func i2c_read failed");	
+		else 
+		{
+			/*Checking whether RDS Ready bit is set or not, if not set return immediately*/
+			if(!(STATUSRSSI_RDS_READY_STATUS(Si4709_dev.registers[STATUSRSSI])))
+			{
+				error("RDS Ready Bit Not set");
+				return;
+			}  
+	
+			debug("RDS Ready bit is set");
+			
+			debug_rds("No_of_RDS_groups_Available : %d",RDS_Data_Available);
+			
+			RDS_Data_Available = 0;
+		
+			debug("RDS_Buffer_Index_write = %d",RDS_Buffer_Index_write);
+		
+			/*Writing into the Circular Buffer*/
+		
+			/*Writing into RDS_Block_Data_buffer*/
+			i = 0;
+			RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_write] = Si4709_dev.registers[RDSA];
+			RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_write] = Si4709_dev.registers[RDSB];
+			RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_write] = Si4709_dev.registers[RDSC];
+			RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_write] = Si4709_dev.registers[RDSD];
+
+			/*Writing into RDS_Block_Error_buffer*/
+			i = 0;
+			RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_write] = STATUSRSSI_RDS_BLOCK_A_ERRORS(Si4709_dev.registers[STATUSRSSI]);
+			RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_write] = READCHAN_BLOCK_B_ERRORS(Si4709_dev.registers[READCHAN]);
+			RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_write] = READCHAN_BLOCK_C_ERRORS(Si4709_dev.registers[READCHAN]);
+			RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_write] = READCHAN_BLOCK_D_ERRORS(Si4709_dev.registers[READCHAN]); 
+
+#ifdef RDS_TESTING			
+			if(RDS_Block_Error_buffer[1 + 4*RDS_Buffer_Index_write] < 2)
+			{
+				group_type = RDS_Block_Data_buffer[1 + 4*RDS_Buffer_Index_write] >> 11; 
+					
+				if(group_type == GROUP_TYPE_2A || group_type == GROUP_TYPE_2B )
+				{
+					if(RDS_Block_Error_buffer[2 + 4*RDS_Buffer_Index_write] < 3)
+					{
+						debug_rds("Update RT with RDSC");								
+					}
+					else
+					{
+						debug_rds("RDS_Block_Error_buffer of Block C is greater than 3");			
+					}
+				}
+			}
+#endif		
+			RDS_Buffer_Index_write++;
+		
+			if(RDS_Buffer_Index_write >= RDS_BUFFER_LENGTH)
+				RDS_Buffer_Index_write = 0;	
+			
+			debug("RDS_Buffer_Index_write = %d",RDS_Buffer_Index_write);
+		}
+	}
+	
+//	mutex_unlock(&(Si4709_dev.lock));
+}
+#endif
+/*VNVS:END*/
+
 int Si4709_dev_RDS_data_get(radio_data_t *data)
 {
-	int ret = 0;
+	int i,ret = 0;
 	u16 sysconfig1 = 0;
 
 	debug("Si4709_dev_RDS_data_get called");
@@ -1579,11 +1774,66 @@ int Si4709_dev_RDS_data_get(radio_data_t *data)
     
 	if( Si4709_dev.valid == eFALSE )
 	{
-		debug("Si4709_dev_RDS_data_get called when DS is invalid");
+		error("Si4709_dev_RDS_data_get called when DS is invalid");
 		ret = -1;
 	}
 	else
 	{
+#ifdef RDS_INTERRUPT_ON_ALWAYS 
+		debug("RDS_Buffer_Index_read = %d",RDS_Buffer_Index_read);
+		
+		/*If No New RDS Data is available return error*/
+		if(RDS_Buffer_Index_read == RDS_Buffer_Index_write)
+		{	
+			debug_rds("No_New_RDS_Data_is_available");					
+			if((ret = i2c_read(READCHAN)) < 0)	
+				error("Si4709_dev_RDS_data_get i2c_read 1 failed");
+			else
+			{
+				get_cur_chan_freq(&(data->curr_channel), Si4709_dev.registers[READCHAN]);			
+				data->curr_rssi = STATUSRSSI_RSSI_SIGNAL_STRENGTH(Si4709_dev.registers[STATUSRSSI]);
+				debug_rds("curr_channel: %u, curr_rssi:%u",data->curr_channel,(u32)data->curr_rssi);
+			}
+			ret = -1;
+		}
+		else
+		{
+			if((ret = i2c_read(READCHAN)) < 0)	
+				error("Si4709_dev_RDS_data_get i2c_read 2 failed");
+			else
+			{
+				get_cur_chan_freq(&(data->curr_channel), Si4709_dev.registers[READCHAN]);			
+				data->curr_rssi = STATUSRSSI_RSSI_SIGNAL_STRENGTH(Si4709_dev.registers[STATUSRSSI]);
+				debug("curr_channel: %u, curr_rssi:%u",data->curr_channel,(u32)data->curr_rssi);
+						
+				/*Reading from RDS_Block_Data_buffer*/
+				i = 0; 
+				data->rdsa = RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_read];
+				data->rdsb = RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_read];
+				data->rdsc = RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_read];
+				data->rdsd = RDS_Block_Data_buffer[i++ + 4*RDS_Buffer_Index_read];
+
+				/*Reading from RDS_Block_Error_buffer*/
+				i = 0;
+				data->blera = RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_read];
+				data->blerb = RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_read];
+				data->blerc = RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_read];
+				data->blerd = RDS_Block_Error_buffer[i++ + 4*RDS_Buffer_Index_read];  
+
+				/*Flushing the read data*/
+				memset(&RDS_Block_Data_buffer[0+4*RDS_Buffer_Index_read],0,8); 
+				memset(&RDS_Block_Error_buffer[0+4*RDS_Buffer_Index_read],0,4);
+			
+				RDS_Buffer_Index_read++;
+		
+				if(RDS_Buffer_Index_read >= RDS_BUFFER_LENGTH)
+					RDS_Buffer_Index_read = 0;
+			}
+		}
+				
+		debug("RDS_Buffer_Index_read = %d",RDS_Buffer_Index_read);
+		
+#else 
 		SYSCONFIG1_BITSET_RDSIEN_HIGH(&Si4709_dev.registers[SYSCONFIG1]);
 
 		if((ret = i2c_write(SYSCONFIG1)) < 0)
@@ -1591,8 +1841,9 @@ int Si4709_dev_RDS_data_get(radio_data_t *data)
 			debug("Si4709_dev_RDS_data_get i2c_write 1 failed");
 			Si4709_dev.registers[SYSCONFIG1] = sysconfig1;
 		}
-		else	{
-			if( (ret=i2c_read(SYSCONFIG1)) < 0);
+		else	
+		{
+			if( (ret=i2c_read(SYSCONFIG1)) < 0)
 				debug("Si4709_dev_RDS_data_get i2c_read 1 failed");
 
 			debug("sysconfig1: 0x%x",Si4709_dev.registers[SYSCONFIG1] );
@@ -1613,7 +1864,7 @@ int Si4709_dev_RDS_data_get(radio_data_t *data)
 				debug("Si4709_dev_RDS_data_get i2c_write 2 failed");
 				Si4709_dev.registers[SYSCONFIG1] = sysconfig1;
 			}
-            		else if(Si4709_dev_wait_flag == WAIT_OVER)
+            else if(Si4709_dev_wait_flag == WAIT_OVER)
 			{
 				Si4709_dev_wait_flag = NO_WAIT;
 
@@ -1636,13 +1887,14 @@ int Si4709_dev_RDS_data_get(radio_data_t *data)
 					data->blerd = READCHAN_BLOCK_D_ERRORS(Si4709_dev.registers[READCHAN]);
 				}
 			}
-            		else
+            else
 			{
 				debug("Si4709_dev_RDS_data_get failure no interrupt or timeout");
 				Si4709_dev_wait_flag = NO_WAIT;
 				ret = -1;
 			}
-        	} 
+        } 
+#endif
 	}
 
 	mutex_unlock(&(Si4709_dev.lock)); 
@@ -1763,6 +2015,7 @@ static int powerdown(void)
 		 /****Resetting the device****/	
 		gpio_set_value(FM_RESET, GPIO_LEVEL_LOW);
 		gpio_set_value(FM_RESET, GPIO_LEVEL_HIGH);
+		gpio_set_value(FM_RESET, GPIO_LEVEL_LOW);
 	}
 	else
 		debug("Device already Powered-OFF");

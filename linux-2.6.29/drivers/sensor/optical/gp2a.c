@@ -241,27 +241,36 @@ static void gp2a_work_func_light(struct work_struct *work)
 	gprintk("Optimized adc = %d \n",adc);
 	gprintk("cur_state = %d\n",cur_state);
 	gprintk("light_enable = %d\n",light_enable);
-#if 0
-	if(adc >= 1500)
-		level_state = LIGHT_LEVEL3;
-
-	else if(adc >= 100 && adc < 1500){
-		level_state = LIGHT_LEVEL2;
-	}
-
-	else if(adc < 100){
-		level_state = LIGHT_LEVEL1;
-	}
-#else
+#if 1 //add 150lux
 	if(adc >= 2100)
+	{
+		level_state = LIGHT_LEVEL5;
+		buffering = 5;
+	}
+
+	else if(adc >= 1900 && adc < 2100)
+	{
+		if(buffering == 5)
+		{	
+			level_state = LIGHT_LEVEL5;
+			buffering = 5;
+		}
+		else if((buffering == 1)||(buffering == 2)||(buffering == 3)||(buffering == 4))
+		{
+			level_state = LIGHT_LEVEL4;
+			buffering = 4;
+		}
+	}
+
+	else if(adc >= 1800 && adc < 1900)
 	{
 		level_state = LIGHT_LEVEL4;
 		buffering = 4;
 	}
 
-	else if(adc >= 1900 && adc < 2100)
+	else if(adc >= 1200 && adc < 1800)
 	{
-		if(buffering == 4)
+		if((buffering == 4)||(buffering == 5))
 		{	
 			level_state = LIGHT_LEVEL4;
 			buffering = 4;
@@ -273,14 +282,15 @@ static void gp2a_work_func_light(struct work_struct *work)
 		}
 	}
 	
-	else if(adc >= 1800 && adc < 1900)
+	else if(adc >= 800 && adc < 1200)
 	{
 		level_state = LIGHT_LEVEL3;
+		buffering = 3;
 	}
 
-	else if(adc >= 1200 && adc < 1800)
+	else if(adc >= 600 && adc < 800)
 	{
-		if((buffering == 3)||(buffering == 4))
+		if((buffering == 3)||(buffering == 4)||(buffering == 5))
 		{	
 			level_state = LIGHT_LEVEL3;
 			buffering = 3;
@@ -292,15 +302,15 @@ static void gp2a_work_func_light(struct work_struct *work)
 		}
 	}
 
-	else if(adc >= 500 && adc < 1200)
+	else if(adc >= 400 && adc < 600)
 	{
 		level_state = LIGHT_LEVEL2;
 		buffering = 2;
 	}
 	
-	else if(adc >= 80 && adc < 500)
+	else if(adc >= 250 && adc < 400)
 	{
-		if((buffering == 2)||(buffering == 3)||(buffering == 4))
+		if((buffering == 2)||(buffering == 3)||(buffering == 4)||(buffering == 5))
 		{	
 			level_state = LIGHT_LEVEL2;
 			buffering = 2;
@@ -312,7 +322,7 @@ static void gp2a_work_func_light(struct work_struct *work)
 		}
 	}
 
-	else if(adc < 80)
+	else if(adc < 250)
 	{
 		level_state = LIGHT_LEVEL1;
 		buffering = 1;
@@ -326,7 +336,7 @@ static void gp2a_work_func_light(struct work_struct *work)
 #ifdef MDNIE_TUNINGMODE_FOR_BACKLIGHT
 	if(autobrightness_mode)
 	{
-		if((pre_val!=1)&&(current_gamma_value == 24)&&(level_state == LIGHT_LEVEL4)&&(current_mDNIe_UI == mDNIe_UI_MODE))
+		if((pre_val!=1)&&(current_gamma_value == 24)&&(level_state == LIGHT_LEVEL5)&&(current_mDNIe_UI == mDNIe_UI_MODE))
 		{	
 			mDNIe_Mode_set_for_backlight(pmDNIe_Gamma_set[1]);
 			pre_val = 1;
@@ -1179,14 +1189,17 @@ static double StateToLux(state_type state)
 	gprintk("[%s] cur_state:%d\n",__func__,state);
 	double lux = 0;
 	
-	if(state== LIGHT_LEVEL4){
+	if(state== LIGHT_LEVEL5){
 		lux = 15000.0;
 	}
-	else if(state == LIGHT_LEVEL3){
+	else if(state == LIGHT_LEVEL4){
 		lux = 9000.0;
 	}
-	else if(state== LIGHT_LEVEL2){
+	else if(state == LIGHT_LEVEL3){
 		lux = 5000.0;
+	}
+	else if(state == LIGHT_LEVEL2){
+		lux = 1000.0;
 	}
 	else if(state == LIGHT_LEVEL1){
 		lux = 6.0;
@@ -1215,7 +1228,7 @@ static ssize_t light_read(struct file *filp, double *lux, size_t count, loff_t *
 	double lux_val;
 
 	lux_val = StateToLux(cur_state);
-	//printk("GP2A: light_read(): cur_state = %d\n",cur_state);
+	gprintk("GP2A: light_read(): cur_state = %d\n",cur_state);
 	put_user(lux_val, lux);
 	
 	return 1;

@@ -377,6 +377,7 @@ enum v4l2_ae_awb_lockunlock {
 enum v4l2_face_lock {
 	FACE_LOCK_OFF = 0,
 	FACE_LOCK_ON,
+	FIRST_FACE_TRACKING,
 	FACE_LOCK_MAX,
 };
 

@@ -150,9 +150,12 @@ static struct usb_device_descriptor device_desc = {
 	.bLength              = sizeof(device_desc),
 	.bDescriptorType      = USB_DT_DEVICE,
 	.bcdUSB               = __constant_cpu_to_le16(0x0200),
-	.bDeviceClass		  = USB_CLASS_MASS_STORAGE,
-	.bDeviceSubClass	  = 0x06,//US_SC_SCSI,
-	.bDeviceProtocol	  = 0x50,//US_PR_BULK,
+//	.bDeviceClass		  = USB_CLASS_MASS_STORAGE,
+//	.bDeviceSubClass	  = 0x06,//US_SC_SCSI,
+//	.bDeviceProtocol	  = 0x50,//US_PR_BULK,
+	.bDeviceClass		  = USB_CLASS_PER_INTERFACE,
+	.bDeviceSubClass	  = 0,//US_SC_SCSI;
+	.bDeviceProtocol	  = 0,//US_PR_BULK;
 	.idVendor             = __constant_cpu_to_le16(VENDOR_ID),
 	.idProduct            = __constant_cpu_to_le16(PRODUCT_ID),
 	.bcdDevice            = __constant_cpu_to_le16(0xffff),
@@ -249,9 +252,13 @@ static int ums_only_bind_config(struct usb_configuration *c)
 	int ret;
 
 	dev->cdev->desc.idProduct = __constant_cpu_to_le16(dev->product_id);
-	dev->cdev->desc.bDeviceClass = USB_CLASS_MASS_STORAGE;
-	dev->cdev->desc.bDeviceSubClass = 0x06;//US_SC_SCSI;
-	dev->cdev->desc.bDeviceProtocol = 0x50;//US_PR_BULK;
+	//dev->cdev->desc.bDeviceClass = USB_CLASS_MASS_STORAGE;
+	//dev->cdev->desc.bDeviceSubClass = 0x06;//US_SC_SCSI;
+	//dev->cdev->desc.bDeviceProtocol = 0x50;//US_PR_BULK;
+	
+	dev->cdev->desc.bDeviceClass = USB_CLASS_PER_INTERFACE;
+	dev->cdev->desc.bDeviceSubClass = 0;//US_SC_SCSI;
+	dev->cdev->desc.bDeviceProtocol = 0;//US_PR_BULK;
 
 	ret = mass_storage_function_config_changed(dev->cdev, c, dev->nluns);
 	if (ret) {
@@ -487,7 +494,9 @@ static int __init android_bind(struct usb_composite_dev *cdev)
 	printk("[ADB_UMS_ACM_RNDIS_MTP] string_dev = %s \n",strings_dev[STRING_SERIAL_IDX].s);
 
 	device_desc.iSerialNumber = id;
+	device_desc.bcdDevice = cpu_to_le16(0x0400);
 
+#if 0
 	gcnum = usb_gadget_controller_number(gadget);
 	if (gcnum >= 0)
 	{
@@ -505,6 +514,7 @@ static int __init android_bind(struct usb_composite_dev *cdev)
 			longname, gadget->name);
 		device_desc.bcdDevice = __constant_cpu_to_le16(0x9999);
 	}
+#endif
 	
 	if (gadget_is_otg(cdev->gadget)) 
 		android_config.descriptors = otg_desc;

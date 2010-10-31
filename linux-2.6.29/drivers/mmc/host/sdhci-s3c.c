@@ -123,9 +123,12 @@ static void sdhci_s3c_set_ios(struct sdhci_host *host,
 			pdata->cfg_gpio(ourhost->pdev, width);
 	}
 
-	if (pdata->cfg_card)
+	if (pdata->cfg_card) {
 		pdata->cfg_card(ourhost->pdev, host->ioaddr,
 				ios, host->mmc->card);
+		pdata->rx_cfg = 0;
+		pdata->tx_cfg = 0;
+	}
 }
 
 static unsigned int sdhci_s3c_consider_clock(struct sdhci_s3c *ourhost,
@@ -205,12 +208,22 @@ static int sdhci_s3c_get_cd(struct sdhci_host *host)
 	return detect;
 }
 
+static int sdhci_s3c_adjust_cfg(struct sdhci_host *host, int rw)
+{
+	struct sdhci_s3c *ourhost = to_s3c(host);
+	struct s3c_sdhci_platdata *pdata = ourhost->pdata;
+
+	if(pdata->adjust_cfg_card)
+		pdata->adjust_cfg_card(pdata, host->ioaddr, rw);
+}
+
 static struct sdhci_ops sdhci_s3c_ops = {
 	.get_max_clock		= sdhci_s3c_get_max_clk,
 	.get_timeout_clock	= sdhci_s3c_get_timeout_clk,
 	.change_clock		= sdhci_s3c_change_clock,
 	.set_ios		= sdhci_s3c_set_ios,
 	.get_cd			= sdhci_s3c_get_cd,
+	.adjust_cfg		= sdhci_s3c_adjust_cfg,
 };
 
 /*
@@ -219,10 +232,10 @@ static struct sdhci_ops sdhci_s3c_ops = {
  */
 void sdhci_s3c_force_presence_change(struct platform_device *pdev)
 {
-       struct s3c_sdhci_platdata *pdata = pdev->dev.platform_data;
+	struct s3c_sdhci_platdata *pdata = pdev->dev.platform_data;
 
-       printk("%s : Enter\n",__FUNCTION__);
-       mmc_detect_change(pdata->sdhci_host->mmc, msecs_to_jiffies(200));
+	printk(KERN_DEBUG "%s : Enter\n",__FUNCTION__);
+	mmc_detect_change(pdata->sdhci_host->mmc, msecs_to_jiffies(200));
 }
 EXPORT_SYMBOL_GPL(sdhci_s3c_force_presence_change);
 
@@ -353,6 +366,7 @@ static int __devinit sdhci_s3c_probe(struct platform_device *pdev)
 	host->irq = irq;
 
 	/* Setup quirks for the controller */
+	host->quirks |= SDHCI_QUIRK_BROKEN_TIMEOUT_VAL;
 
 	host->flags = SDHCI_USE_DMA;
 

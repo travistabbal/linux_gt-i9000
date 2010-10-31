@@ -77,6 +77,7 @@ struct mmc_host_ops {
 	int	(*get_cd)(struct mmc_host *host);
 
 	void	(*enable_sdio_irq)(struct mmc_host *host, int enable);
+	void	(*adjust_cfg)(struct mmc_host *host, int rw);
 };
 
 struct mmc_card;

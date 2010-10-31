@@ -41,10 +41,10 @@ struct s3c_sdhci_platdata {
 	char		**clocks;	/* set of clock sources */
 
 	void	(*cfg_gpio)(struct platform_device *dev, int width);
-	void	(*cfg_card)(struct platform_device *dev,
-			    void __iomem *regbase,
-			    struct mmc_ios *ios,
-			    struct mmc_card *card);
+	void	(*cfg_card)(struct platform_device *dev, void __iomem *regbase, struct mmc_ios *ios, struct mmc_card *card);
+	void	(*adjust_cfg_card)(struct s3c_sdhci_platdata *pdata, void __iomem *regbase, int rw);
+	int		rx_cfg;
+	int		tx_cfg;
 	/* add to deal with EXT_IRQ as a card detect pin */
 	void		(*cfg_ext_cd) (void);
 	unsigned int	(*detect_ext_cd) (void);
@@ -86,10 +86,8 @@ extern void s3c6410_setup_sdhci1_cfg_gpio(struct platform_device *, int w);
 extern void s3c6410_setup_sdhci2_cfg_gpio(struct platform_device *, int w);
 extern void s3c6410_setup_sdhci3_cfg_gpio(struct platform_device *, int w);
 
-extern void s3c6410_setup_sdhci0_cfg_card(struct platform_device *dev,
-					   void __iomem *r,
-					   struct mmc_ios *ios,
-					   struct mmc_card *card);
+extern void s3c6410_setup_sdhci0_cfg_card(struct platform_device *dev, void __iomem *r, struct mmc_ios *ios, struct mmc_card *card);
+extern void s3c6410_adjust_sdhci_cfg_card(struct s3c_sdhci_platdata *pdata, void __iomem *r, int rw);
 
 #ifdef CONFIG_S3C_DEV_HSMMC
 static inline void s3c6410_default_sdhci0(void)
@@ -97,6 +95,7 @@ static inline void s3c6410_default_sdhci0(void)
 	s3c_hsmmc0_def_platdata.clocks = s3c6410_hsmmc_clksrcs;
 	s3c_hsmmc0_def_platdata.cfg_gpio = s3c6410_setup_sdhci0_cfg_gpio;
 	s3c_hsmmc0_def_platdata.cfg_card = s3c6410_setup_sdhci0_cfg_card;
+	s3c_hsmmc0_def_platdata.adjust_cfg_card = s3c6410_adjust_sdhci_cfg_card;
 }
 #else
 static inline void s3c6410_default_sdhci0(void) { }
@@ -108,6 +107,7 @@ static inline void s3c6410_default_sdhci1(void)
 	s3c_hsmmc1_def_platdata.clocks = s3c6410_hsmmc_clksrcs;
 	s3c_hsmmc1_def_platdata.cfg_gpio = s3c6410_setup_sdhci1_cfg_gpio;
 	s3c_hsmmc1_def_platdata.cfg_card = s3c6410_setup_sdhci0_cfg_card;
+	s3c_hsmmc1_def_platdata.adjust_cfg_card = s3c6410_adjust_sdhci_cfg_card;
 }
 #else
 static inline void s3c6410_default_sdhci1(void) { }
@@ -119,6 +119,7 @@ static inline void s3c6410_default_sdhci2(void)
 	s3c_hsmmc2_def_platdata.clocks = s3c6410_hsmmc_clksrcs;
 	s3c_hsmmc2_def_platdata.cfg_gpio = s3c6410_setup_sdhci2_cfg_gpio;
 	s3c_hsmmc2_def_platdata.cfg_card = s3c6410_setup_sdhci0_cfg_card;
+	s3c_hsmmc2_def_platdata.adjust_cfg_card = s3c6410_adjust_sdhci_cfg_card;
 }
 #else
 static inline void s3c6410_default_sdhci2(void) { }
@@ -130,6 +131,7 @@ static inline void s3c6410_default_sdhci3(void)
 	s3c_hsmmc3_def_platdata.clocks = s3c6410_hsmmc_clksrcs;
 	s3c_hsmmc3_def_platdata.cfg_gpio = s3c6410_setup_sdhci3_cfg_gpio;
 	s3c_hsmmc3_def_platdata.cfg_card = s3c6410_setup_sdhci0_cfg_card;
+	s3c_hsmmc3_def_platdata.adjust_cfg_card = s3c6410_adjust_sdhci_cfg_card;
 }
 #else
 static inline void s3c6410_default_sdhci3(void) { }
