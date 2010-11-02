@@ -1,17 +1,40 @@
 #/bin/bash
 
-echo "$1 $2 $3"
+echo "options: $1 $2 $3"
+
+# config:
+TOOLCHAIN=`pwd`/../../toolchain/arm-voodoo-eabi/bin
+TOOLCHAIN_PREFIX=arm-voodoo-eabi-
+
+KERNEL_BUILD_DIR=Kernel
+
+# print title
+PRINT_USAGE()
+{
+	echo "************************************************************"
+	echo "* USAGE                                                    *"
+	echo "************************************************************"
+	echo "* Options:                                                 *"
+	echo "* clean      make clean                                    *"
+	echo "* nokernel   disable kernel build                          *"
+	echo "* modules    build modules                                 *"
+	echo "* defconfig  generate default config                       *"
+	echo "* updatezip  generate update.zip                           *"
+	echo "* tar        generate zImage.tar for heimdall/odin         *"
+	echo "* help       shows this                                    *"
+	echo "************************************************************"
+}
 
 while true
 do
   case $# in 0) break ;; esac
     case "$1" in
-	    Clean)
+	    clean|Clean)
 		    echo "********************************************************************************"
 		    echo "* Clean Kernel                                                                 *"
 		    echo "********************************************************************************"
 
-		    pushd linux-2.6.29
+		    pushd $KERNEL_BUILD_DIR
 		    make clean
 		    popd
 		    pushd modules
@@ -60,10 +83,7 @@ if [ "$CPU_JOB_NUM" = "" ] ; then
 	CPU_JOB_NUM=8
 fi
 
-TOOLCHAIN=`pwd`/../../toolchain/arm-voodoo-eabi/bin
-TOOLCHAIN_PREFIX=arm-voodoo-eabi-
 
-KERNEL_BUILD_DIR=Kernel
 
 export PRJROOT=$PWD
 export PROJECT_NAME
@@ -72,7 +92,7 @@ export HW_BOARD_REV
 export LD_LIBRARY_PATH=.:${TOOLCHAIN}/../lib
 
 echo "************************************************************"
-echo "* EXPORT VARIABLE		                            	 *"
+echo "* EXPORT VARIABLE                                          *"
 echo "************************************************************"
 echo "PRJROOT=$PRJROOT"
 echo "PROJECT_NAME=$PROJECT_NAME"
@@ -132,22 +152,6 @@ BUILD_KERNEL()
 	    ./build-update-zip.sh
 	    popd
 	fi
-}
-
-# print title
-PRINT_USAGE()
-{
-	echo "************************************************************"
-	echo "* USAGE                                                    *"
-	echo "************************************************************"
-	echo "* Options:                                                 *"
-	echo "* nokernel   disable kernel build                          *"
-	echo "* modules    build modules                                 *"
-	echo "* defconfig  generate default config                       *"
-	echo "* updatezip  generate update.zip                           *"
-	echo "* tar        generate zImage.tar for heimdall/odin         *"
-	echo "* help       shows this                                    *"
-	echo "************************************************************"
 }
 
 PRINT_TITLE()
