@@ -805,7 +805,7 @@ struct file_operations backlightnotification_device_fops = {
 
 static struct miscdevice backlightnotification_device = {
 	.minor = MISC_DYNAMIC_MINOR,
-	.name = "backlightnotfication",
+	.name = "backlightnotification",
 //	.fops	= &mymisc_fops,
 };
 #endif
