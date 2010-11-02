@@ -54,6 +54,7 @@ Melfas touchkey register
 #define DEVICE_NAME "melfas-touchkey"
 
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
+#define BACKLIGHTNOTIFICATION_VERSION 6
 #define BACKLIGHT_ON 1
 #define BACKLIGHT_OFF 2
 #endif
@@ -95,8 +96,9 @@ extern int get_touchkey_firmware(char * version);
 static int touchkey_led_status = 0;
 
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
-static int touchkey_power_status = 0;
-static bool backlight_notification_allowed = true;
+static bool touchkey_controller_vdd_on = false;
+static bool backlight_notification_allowed = true;	//indicates if BLN function is enabled/allowed
+bool BacklightNotification_enabled= false;		//indicates ongoing LED Notification
 #endif
 
 struct i2c_driver touchkey_i2c_driver =
@@ -121,7 +123,7 @@ static void set_touchkey_debug(char value)
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
 static void touchkey_power_on_only_vdd(void){
     gpio_direction_output(_3_GPIO_TOUCH_EN, 1);
-    touchkey_power_status = 1;
+    touchkey_controller_vdd_on = true;
 }
 
 static void touchkey_power_on(void){
@@ -130,7 +132,7 @@ static void touchkey_power_on(void){
 }
 
 static void touchkey_power_off(void){
-    touchkey_power_status = 0;
+    touchkey_controller_vdd_on = false;
     gpio_direction_output(_3_GPIO_TOUCH_EN, 0);
     gpio_direction_output(_3_GPIO_TOUCH_CE, 0);
 }
@@ -230,7 +232,7 @@ void  touchkey_work_func(struct work_struct * p)
             while(retry--)
             {
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
-		touchkey_power_status = 0;
+		touchkey_controller_vdd_on = false;
 #endif
                 gpio_direction_output(_3_GPIO_TOUCH_EN, 0);
                 mdelay(300);
@@ -647,7 +649,7 @@ static ssize_t touch_update_read(struct device *dev, struct device_attribute *at
 
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
 static void set_backlight(u8 backlight_status){
-    if (touchkey_power_status == 1){
+    if (touchkey_controller_vdd_on){
 	touchkey_led_status = backlight_status;
 	i2c_touchkey_write(&backlight_status, 1);
     }
@@ -719,69 +721,120 @@ static ssize_t touchkey_enable_disable(struct device *dev, struct device_attribu
 }
 
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
-static ssize_t notification_led_control(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
+
+static void enable_led_notification(void){
+    if (backlight_notification_allowed){
+	if (touchkey_enable != 1){
+	    touchkey_power_on();
+	    mdelay(100);
+	    
+	    /* enable touchkey vdd in sleep mode */
+	    BacklightNotification_enabled = true;
+	    
+	    /* write to i2cbus, enable backlights */
+	    set_backlight(BACKLIGHT_ON);
+	    
+	    printk(KERN_DEBUG "%s: notification led enabled\n", __FUNCTION__);
+	} 
+	else
+	    printk(KERN_DEBUG "%s: cannot set notification led, touchkeys are enabled\n",__FUNCTION__);
+    }
+}
+
+static void disable_led_notification(void){
+    printk(KERN_DEBUG "%s: notification led disabled\n", __FUNCTION__);
+    /* disable touchkey vdd in sleep mode */
+    BacklightNotification_enabled = false;
+    
+    if (touchkey_enable != 1){
+	/* write to i2cbus, disable backlights */
+	set_backlight(BACKLIGHT_OFF);
+    }
+}
+
+static ssize_t backlightnotification_status_read(struct device *dev, struct device_attribute *attr, char *buf) {
+    return sprintf(buf,"%u\n",(backlight_notification_allowed ? 1 : 0));
+}
+static ssize_t backlightnotification_status_write(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
+{
+    unsigned int data;
+    if(sscanf(buf, "%u\n", &data) == 1) {
+	printk(KERN_DEBUG "%s: %u \n", __FUNCTION__, data);
+	if(data == 0 || data == 1){
+	    
+	    if(data == 1){
+		printk(KERN_DEBUG "%s: backlightnotification function enabled\n", __FUNCTION__);
+		backlight_notification_allowed = true;
+	    }
+	    
+	    if(data == 0){
+		printk(KERN_DEBUG "%s: backlightnotification function disabled\n", __FUNCTION__);
+		backlight_notification_allowed = false;
+		if (BacklightNotification_enabled){
+			disable_led_notification();
+		}
+	    }
+	}
+	else
+	    printk(KERN_DEBUG "%s: wrong input %u\n", __FUNCTION__, data);
+    }
+    else
+	printk("%s: input error\n", __FUNCTION__);
+    
+    return size;
+}
+
+static ssize_t notification_led_status_read(struct device *dev, struct device_attribute *attr, char *buf) {
+    return sprintf(buf,"%u\n", (BacklightNotification_enabled ? 1 : 0)); //todo: boolean for notification_led
+}
+
+static ssize_t notification_led_status_write(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
     unsigned int data;
 
     if(sscanf(buf, "%u\n", &data) == 1) {
-	if(data > 0 && data < 5){
-	    printk(KERN_DEBUG "notification_led_control: %u \n", data);
-	    if (data == 1) {
-		if (backlight_notification_allowed){
-		    if (touchkey_enable != 1){
-			touchkey_power_on_only_vdd();
-			mdelay(100);
+	if(data == 0 || data == 1){
+	    printk(KERN_DEBUG "%s: %u \n", __FUNCTION__, data);
+	    if (data == 1)
+		enable_led_notification();
 
-			/* enable touchkey vdd in sleep mode */
-			s3c_gpio_slp_cfgpin(_3_GPIO_TOUCH_EN, S3C_GPIO_SLP_OUT1);
-			s3c_gpio_slp_setpull_updown(_3_GPIO_TOUCH_EN, S3C_GPIO_PULL_DOWN);
+	    if(data == 0) 
+		disable_led_notification();
 
-			/* write to i2cbus, enable backlights */
-			set_backlight(BACKLIGHT_ON);
-		    }
-		    else
-			printk(KERN_DEBUG "notification_led_control: cannot set led, touchkeys are enabled\n");
-		}
-	    }
-
-	    if(data == 2) {
-		printk(KERN_DEBUG "notification_led_control: notification led disabled\n");
-
-		/* disable touchkey vdd in sleep mode */
-		s3c_gpio_slp_cfgpin(_3_GPIO_TOUCH_EN, S3C_GPIO_SLP_OUT0);
-		s3c_gpio_slp_setpull_updown(_3_GPIO_TOUCH_EN, S3C_GPIO_PULL_NONE);
-
-		if (touchkey_enable != 1){
-		    /* write to i2cbus, disable backlights */
-		    set_backlight(BACKLIGHT_OFF);
-		}
-	    }
-
-	    if(data == 3) {
-		backlight_notification_allowed=true;
-	    }
-
-	    if(data == 4) {
-		backlight_notification_allowed=false;
-	    }
-	}
-	else
-	    printk(KERN_DEBUG "notification_led_control: wrong input %u\n", data);
-    }
-    else
-	printk("notification_led_control: input error\n");
+	} else
+	    printk(KERN_DEBUG "%s: wrong input %u\n", __FUNCTION__, data);
+    } else
+	printk("%s: input error\n", __FUNCTION__);
 
     return size;
 }
+
+static ssize_t backlightnotification_version(struct device *dev, struct device_attribute *attr, char *buf) {
+    return sprintf(buf, "%u\n", BACKLIGHTNOTIFICATION_VERSION);
+}
+
+static DEVICE_ATTR(enabled, S_IRUGO | S_IWUGO , backlightnotification_status_read, backlightnotification_status_write);
+static DEVICE_ATTR(notification_led, S_IRUGO | S_IWUGO , notification_led_status_read, notification_led_status_write);
+static DEVICE_ATTR(version, S_IRUGO , backlightnotification_version, NULL);
+
+/*
+struct file_operations backlightnotification_device_fops = {
+	.owner = THIS_MODULE,
+	.read = null,
+};
+*/
+
+static struct miscdevice backlightnotification_device = {
+	.minor = MISC_DYNAMIC_MINOR,
+	.name = "backlightnotification",
+//	.fops	= &mymisc_fops,
+};
 #endif
 
 static DEVICE_ATTR(touch_version, S_IRUGO | S_IWUSR | S_IWOTH | S_IXOTH, touch_version_read, touch_version_write);
 static DEVICE_ATTR(touch_update, S_IRUGO | S_IWUSR | S_IWOTH | S_IXOTH, touch_update_read, touch_update_write);
 static DEVICE_ATTR(brightness, S_IRUGO | S_IWUSR | S_IWOTH | S_IXOTH, NULL, touch_led_control);
 static DEVICE_ATTR(enable_disable, S_IRUGO | S_IWUSR | S_IWOTH | S_IXOTH, NULL, touchkey_enable_disable);
-#ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
-static DEVICE_ATTR(notification_led_control, S_IRUGO | S_IWUSR | S_IWOTH | S_IXOTH, NULL, notification_led_control);
-#endif
 
 extern unsigned int HWREV;
 static int __init touchkey_init(void)
@@ -825,10 +878,26 @@ static int __init touchkey_init(void)
 	}
 
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
-	if (device_create_file(touchkey_update_device.this_device, &dev_attr_notification_led_control) < 0)
+	ret = 0;
+	ret = misc_register(&backlightnotification_device);
+	if (ret) {
+		printk("%s misc_register fail\n", __FUNCTION__, backlightnotification_device.name);
+	}
+	//add the backlightnotification attributes
+	if (device_create_file(backlightnotification_device.this_device, &dev_attr_enabled) < 0)
 	{
-		printk("%s device_create_file fail dev_attr_touch_update\n",__FUNCTION__);
-		pr_err("Failed to create device file(%s)!\n", dev_attr_notification_led_control.attr.name);
+		printk("%s device_create_file fail dev_attr_touch_update\n", __FUNCTION__);
+		pr_err("Failed to create device file(%s)!\n", dev_attr_enabled.attr.name);
+	}
+	if (device_create_file(backlightnotification_device.this_device, &dev_attr_notification_led) < 0)
+	{
+		printk("%s device_create_file fail dev_attr_touch_update\n", __FUNCTION__);
+		pr_err("Failed to create device file(%s)!\n", dev_attr_notification_led.attr.name);
+	}
+	if (device_create_file(backlightnotification_device.this_device, &dev_attr_version) < 0)
+	{
+		printk("%s device_create_file fail dev_attr_touch_update\n", __FUNCTION__);
+		pr_err("Failed to create device file(%s)!\n", dev_attr_version.attr.name);
 	}
 #endif
 
@@ -892,6 +961,9 @@ static void __exit touchkey_exit(void)
         printk("%s \n",__FUNCTION__);
 	i2c_del_driver(&touchkey_i2c_driver);
 	misc_deregister(&touchkey_update_device);
+#ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
+	misc_deregister(&backlightnotification_device);
+#endif
 	if (touchkey_wq)
 		destroy_workqueue(touchkey_wq);
 }
