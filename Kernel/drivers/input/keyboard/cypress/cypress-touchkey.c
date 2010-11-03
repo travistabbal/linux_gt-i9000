@@ -731,6 +731,10 @@ static void enable_led_notification(void){
 	    /* enable touchkey vdd in sleep mode */
 	    BacklightNotification_enabled = true;
 	    
+	    /* enable touchkey vdd in sleep mode */
+	    s3c_gpio_slp_cfgpin(_3_GPIO_TOUCH_EN, S3C_GPIO_SLP_OUT1);
+	    s3c_gpio_slp_setpull_updown(_3_GPIO_TOUCH_EN, S3C_GPIO_PULL_DOWN);
+	    
 	    /* write to i2cbus, enable backlights */
 	    set_backlight(BACKLIGHT_ON);
 	    
@@ -745,6 +749,10 @@ static void disable_led_notification(void){
     printk(KERN_DEBUG "%s: notification led disabled\n", __FUNCTION__);
     /* disable touchkey vdd in sleep mode */
     BacklightNotification_enabled = false;
+    
+    /* disable touchkey vdd in sleep mode */
+    s3c_gpio_slp_cfgpin(_3_GPIO_TOUCH_EN, S3C_GPIO_SLP_OUT0);
+    s3c_gpio_slp_setpull_updown(_3_GPIO_TOUCH_EN, S3C_GPIO_PULL_NONE);
     
     if (touchkey_enable != 1){
 	/* write to i2cbus, disable backlights */
