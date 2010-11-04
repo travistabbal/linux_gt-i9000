@@ -97,7 +97,7 @@ static int touchkey_led_status = 0;
 
 #ifdef CONFIG_KEYPAD_CYPRESS_TOUCH_USE_BLN
 static bool touchkey_controller_vdd_on = false;
-static bool backlight_notification_allowed = true;	//indicates if BLN function is enabled/allowed
+static bool backlight_notification_allowed = false;	//indicates if BLN function is enabled/allowed
 bool BacklightNotification_enabled= false;		//indicates ongoing LED Notification
 #endif
 
