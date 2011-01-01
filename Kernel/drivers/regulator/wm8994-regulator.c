@@ -121,7 +121,7 @@ static struct regulator_ops wm8994_ldo1_ops = {
 	.enable = wm8994_ldo_enable,
 	.disable = wm8994_ldo_disable,
 	.is_enabled = wm8994_ldo_is_enabled,
-	.enable_time = wm8994_ldo_enable_time,
+//	.enable_time = wm8994_ldo_enable_time,
 
 	.list_voltage = wm8994_ldo1_list_voltage,
 	.get_voltage = wm8994_ldo1_get_voltage,
@@ -172,7 +172,7 @@ static struct regulator_ops wm8994_ldo2_ops = {
 	.enable = wm8994_ldo_enable,
 	.disable = wm8994_ldo_disable,
 	.is_enabled = wm8994_ldo_is_enabled,
-	.enable_time = wm8994_ldo_enable_time,
+//	.enable_time = wm8994_ldo_enable_time,
 
 	.list_voltage = wm8994_ldo2_list_voltage,
 	.get_voltage = wm8994_ldo2_get_voltage,

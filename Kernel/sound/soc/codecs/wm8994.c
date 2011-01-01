@@ -4231,12 +4231,12 @@ static void wm8994_handle_pdata(struct wm8994_priv *wm8994)
 		/* We need an array of texts for the enum API */
 		wm8994->mbc_texts = kmalloc(sizeof(char *)
 					    * pdata->num_mbc_cfgs, GFP_KERNEL);
-		if (!wm8994->mbc_texts) {
+/*		if (!wm8994->mbc_texts) {
 			dev_err(wm8994->codec->dev,
 				"Failed to allocate %d MBC config texts\n",
 				pdata->num_mbc_cfgs);
 			return;
-		}
+		} */
 
 		for (i = 0; i < pdata->num_mbc_cfgs; i++)
 			wm8994->mbc_texts[i] = pdata->mbc_cfgs[i].name;
@@ -4244,10 +4244,10 @@ static void wm8994_handle_pdata(struct wm8994_priv *wm8994)
 		wm8994->mbc_enum.max = pdata->num_mbc_cfgs;
 		wm8994->mbc_enum.texts = wm8994->mbc_texts;
 
-		ret = snd_soc_add_controls(wm8994->codec, control, 1);
+/*		ret = snd_soc_add_controls(wm8994->codec, control, 1);
 		if (ret != 0)
 			dev_err(wm8994->codec->dev,
-				"Failed to add MBC mode controls: %d\n", ret);
+				"Failed to add MBC mode controls: %d\n", ret);*/
 	}
 
 	if (pdata->num_retune_mobile_cfgs)
