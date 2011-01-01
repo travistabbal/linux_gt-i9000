@@ -90,15 +90,6 @@ static int wm8962_regulator_event_##n(struct notifier_block *nb, \
 	return 0; \
 }
 
-WM8962_REGULATOR_EVENT(0)
-WM8962_REGULATOR_EVENT(1)
-WM8962_REGULATOR_EVENT(2)
-WM8962_REGULATOR_EVENT(3)
-WM8962_REGULATOR_EVENT(4)
-WM8962_REGULATOR_EVENT(5)
-WM8962_REGULATOR_EVENT(6)
-WM8962_REGULATOR_EVENT(7)
-
 static int wm8962_volatile_register(unsigned int reg)
 {
 	if (wm8962_reg_access[reg].vol)
@@ -1724,15 +1715,6 @@ static int wm8962_register(struct wm8962_priv *wm8962,
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
 		goto err;
 	}
-
-	wm8962->disable_nb[0].notifier_call = wm8962_regulator_event_0;
-	wm8962->disable_nb[1].notifier_call = wm8962_regulator_event_1;
-	wm8962->disable_nb[2].notifier_call = wm8962_regulator_event_2;
-	wm8962->disable_nb[3].notifier_call = wm8962_regulator_event_3;
-	wm8962->disable_nb[4].notifier_call = wm8962_regulator_event_4;
-	wm8962->disable_nb[5].notifier_call = wm8962_regulator_event_5;
-	wm8962->disable_nb[6].notifier_call = wm8962_regulator_event_6;
-	wm8962->disable_nb[7].notifier_call = wm8962_regulator_event_7;
 
 	/* This should really be moved into the regulator core */
 	for (i = 0; i < ARRAY_SIZE(wm8962->supplies); i++) {

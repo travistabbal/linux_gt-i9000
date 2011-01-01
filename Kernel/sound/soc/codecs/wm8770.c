@@ -78,10 +78,6 @@ static int wm8770_regulator_event_##n(struct notifier_block *nb, \
 	return 0; \
 }
 
-WM8770_REGULATOR_EVENT(0)
-WM8770_REGULATOR_EVENT(1)
-WM8770_REGULATOR_EVENT(2)
-
 static const DECLARE_TLV_DB_SCALE(adc_tlv, -1200, 100, 0);
 static const DECLARE_TLV_DB_SCALE(dac_dig_tlv, -12750, 50, 1);
 static const DECLARE_TLV_DB_SCALE(dac_alg_tlv, -12700, 100, 1);
@@ -692,10 +688,6 @@ static int wm8770_register(struct wm8770_priv *wm8770,
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
 		return ret;
 	}
-
-	wm8770->disable_nb[0].notifier_call = wm8770_regulator_event_0;
-	wm8770->disable_nb[1].notifier_call = wm8770_regulator_event_1;
-	wm8770->disable_nb[2].notifier_call = wm8770_regulator_event_2;
 
 	/* This should really be moved into the regulator core */
 	for (i = 0; i < ARRAY_SIZE(wm8770->supplies); i++) {

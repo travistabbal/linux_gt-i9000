@@ -100,9 +100,6 @@ static int wm8804_regulator_event_##n(struct notifier_block *nb, \
 	return 0; \
 }
 
-WM8804_REGULATOR_EVENT(0)
-WM8804_REGULATOR_EVENT(1)
-
 static const char *txsrc_text[] = { "S/PDIF RX", "AIF" };
 static const SOC_ENUM_SINGLE_EXT_DECL(txsrc, txsrc_text);
 
@@ -703,9 +700,6 @@ static int wm8804_register(struct wm8804_priv *wm8804,
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
 		return ret;
 	}
-
-	wm8804->disable_nb[0].notifier_call = wm8804_regulator_event_0;
-	wm8804->disable_nb[1].notifier_call = wm8804_regulator_event_1;
 
 	/* This should really be moved into the regulator core */
 	for (i = 0; i < ARRAY_SIZE(wm8804->supplies); i++) {
