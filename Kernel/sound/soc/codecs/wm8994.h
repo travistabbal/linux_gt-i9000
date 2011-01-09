@@ -37,9 +37,6 @@ extern struct snd_soc_dai wm8994_dai;
 #define AUDIO_COMMON_DEBUG 0
 #define SET_AUDIO_LOG
 //#define WM8994_REGISTER_DUMP
-#ifdef CONFIG_SND_VOODOO_SOUND_WM8994_REGISTER_DUMP
-#define WM8994_REGISTER_DUMP
-#endif
 #if defined CONFIG_SND_SOC_WM8994_PCM
 #define ATTACH_ADDITINAL_PCM_DRIVER	// for VT call.
 #endif
