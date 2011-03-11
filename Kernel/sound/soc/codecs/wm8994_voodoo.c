@@ -45,7 +45,7 @@ unsigned short recording_preset = 1;
 
 bool dac_osr128 = true;
 bool adc_osr128 = false;
-bool fll_tuning = false;
+bool fll_tuning = true;
 bool mono_downmix = false;
 
 // keep here a pointer to the codec structure
