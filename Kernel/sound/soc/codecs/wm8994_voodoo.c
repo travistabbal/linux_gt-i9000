@@ -254,10 +254,17 @@ void update_fll_tuning()
 
 unsigned short mono_downmix_get_value(unsigned short val)
 {
-	if (mono_downmix)
-		val |= WM8994_AIF1DAC1_MONO;
-	else
-		val &= ~WM8994_AIF1DAC1_MONO;
+	struct wm8994_priv *wm8994 = codec_->private_data;
+	// depends on the output path in order to preserve mono downmixing
+	// on speaker
+	if (wm8994->cur_path != SPK && wm8994->cur_path != RING_SPK &&
+		wm8994->fmradio_path != FMR_SPK && wm8994->fmradio_path != FMR_SPK_MIX)
+	{
+		if (mono_downmix)
+			val |= WM8994_AIF1DAC1_MONO;
+		else
+			val &= ~WM8994_AIF1DAC1_MONO;
+	}
 	return val;
 }
 
@@ -602,8 +609,11 @@ void voodoo_hook_playback_headset()
 
 unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int reg, unsigned int value)
 {
-	struct wm8994_priv *wm8994 = codec->private_data;
 	// modify some registers before those being written to the codec
+
+	struct wm8994_priv *wm8994 = codec->private_data;
+	// be sure our pointer to codec is up to date
+	codec_ = codec;
 
 	if (! bypass_write_hook)
 	{
