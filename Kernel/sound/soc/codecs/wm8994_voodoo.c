@@ -337,7 +337,7 @@ static ssize_t fm_radio_headset_restore_highs_store(struct device *dev, struct d
 
 static ssize_t fm_radio_headset_normalize_gain_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
-	return sprintf(buf,"%u\n",(fm_radio_headset_restore_highs ? 1 : 0));
+	return sprintf(buf,"%u\n",(fm_radio_headset_normalize_gain ? 1 : 0));
 }
 
 static ssize_t fm_radio_headset_normalize_gain_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
