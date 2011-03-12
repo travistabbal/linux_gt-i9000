@@ -29,3 +29,5 @@ unsigned short tune_fll_value(unsigned short val);
 #ifdef CONFIG_FB_S3C_AMS701KA
 #define GALAXY_TAB
 #endif
+
+enum unified_path { HEADPHONES, SPEAKER };
