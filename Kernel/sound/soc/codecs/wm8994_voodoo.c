@@ -43,6 +43,7 @@ unsigned short recording_preset = 1;
 bool dac_osr128 = true;
 bool adc_osr128 = false;
 bool fll_tuning = true;
+bool dac_direct = true;
 bool mono_downmix = false;
 
 // keep here a pointer to the codec structure
@@ -305,7 +306,6 @@ unsigned short mono_downmix_get_value(unsigned short val)
 	return val;
 }
 
-
 void update_mono_downmix(bool with_mute)
 {
 	unsigned short val1, val2, val3;
@@ -319,6 +319,29 @@ void update_mono_downmix(bool with_mute)
 	wm8994_write(codec_, WM8994_AIF2_DAC_FILTERS_1, val3);
 	bypass_write_hook = false;
 }
+
+unsigned short dac_direct_get_value(unsigned short val)
+{
+	if (dac_direct)
+		val = (val == WM8994_DAC1L_TO_MIXOUTL) ? WM8994_DAC1L_TO_HPOUT1L : val;
+	else
+		val = (val == WM8994_DAC1L_TO_HPOUT1L) ? WM8994_DAC1L_TO_MIXOUTL : val;
+
+	return val;
+}
+
+void update_dac_direct(bool with_mute)
+{
+	unsigned short val1, val2;
+	val1 = dac_direct_get_value(wm8994_read(codec_, WM8994_OUTPUT_MIXER_1));
+	val2 = dac_direct_get_value(wm8994_read(codec_, WM8994_OUTPUT_MIXER_2));
+
+	bypass_write_hook = true;
+	wm8994_write(codec_, WM8994_OUTPUT_MIXER_1, val1);
+	wm8994_write(codec_, WM8994_OUTPUT_MIXER_2, val2);
+	bypass_write_hook = false;
+}
+
 
 /*
  *
@@ -388,6 +411,9 @@ DECLARE_BOOL_STORE_UPDATE_WITH_MUTE(fll_tuning, update_fll_tuning, false)
 
 DECLARE_BOOL_SHOW(mono_downmix)
 DECLARE_BOOL_STORE_UPDATE_WITH_MUTE(mono_downmix, update_mono_downmix, false)
+
+DECLARE_BOOL_SHOW(dac_direct)
+DECLARE_BOOL_STORE_UPDATE_WITH_MUTE(dac_direct, update_dac_direct, false)
 
 
 #ifdef CONFIG_SND_VOODOO_DEBUG
@@ -482,6 +508,7 @@ static DEVICE_ATTR(recording_preset, S_IRUGO | S_IWUGO , recording_preset_show, 
 static DEVICE_ATTR(dac_osr128, S_IRUGO | S_IWUGO , dac_osr128_show, dac_osr128_store);
 static DEVICE_ATTR(adc_osr128, S_IRUGO | S_IWUGO , adc_osr128_show, adc_osr128_store);
 static DEVICE_ATTR(fll_tuning, S_IRUGO | S_IWUGO , fll_tuning_show, fll_tuning_store);
+static DEVICE_ATTR(dac_direct, S_IRUGO | S_IWUGO , dac_direct_show, dac_direct_store);
 static DEVICE_ATTR(mono_downmix, S_IRUGO | S_IWUGO , mono_downmix_show, mono_downmix_store);
 #ifdef CONFIG_SND_VOODOO_DEBUG
 static DEVICE_ATTR(wm8994_register_dump, S_IRUGO , show_wm8994_register_dump, NULL);
@@ -504,6 +531,7 @@ static struct attribute *voodoo_sound_attributes[] = {
 		&dev_attr_dac_osr128.attr,
 		&dev_attr_adc_osr128.attr,
 		&dev_attr_fll_tuning.attr,
+		&dev_attr_dac_direct.attr,
 		&dev_attr_mono_downmix.attr,
 #ifdef CONFIG_SND_VOODOO_DEBUG
 		&dev_attr_wm8994_register_dump.attr,
@@ -587,6 +615,8 @@ unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int 
 			value = fll_tuning_get_value(value);
 		if (reg == WM8994_AIF1_DAC1_FILTERS_1 || reg == WM8994_AIF1_DAC2_FILTERS_1 || reg == WM8994_AIF2_DAC_FILTERS_1)
 			value = mono_downmix_get_value(value);
+		if (reg == WM8994_OUTPUT_MIXER_1 || reg == WM8994_OUTPUT_MIXER_2)
+			value = dac_direct_get_value(value);
 	}
 
 #ifdef CONFIG_SND_VOODOO_DEBUG_LOG

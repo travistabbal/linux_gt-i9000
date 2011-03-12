@@ -19,6 +19,7 @@ void update_full_bitwidth(bool with_mute);
 void update_osr128(bool with_mute);
 void update_fll_tuning(bool with_mute);
 void update_mono_downmix(bool with_mute);
+void update_dac_direct(bool with_mute);
 unsigned short tune_fll_value(unsigned short val);
 
 #ifdef CONFIG_MACH_HERRING
