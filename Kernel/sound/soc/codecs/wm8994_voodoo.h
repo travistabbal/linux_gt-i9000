@@ -13,13 +13,13 @@ void voodoo_hook_record_main_mic(void);
 void voodoo_hook_playback_headset(void);
 void update_hpvol(void);
 void update_fm_radio_headset_restore_freqs(bool with_mute);
-void update_fm_radio_headset_normalize_gain(void);
-void update_recording_preset(void);
+void update_fm_radio_headset_normalize_gain(bool with_mute);
+void update_recording_preset(bool with_mute);
 void update_full_bitwidth(bool with_mute);
-void update_osr128(void);
-void update_fll_tuning(void);
+void update_osr128(bool with_mute);
+void update_fll_tuning(bool with_mute);
+void update_mono_downmix(bool with_mute);
 unsigned short tune_fll_value(unsigned short val);
-void update_mono_downmix(void);
 
 #ifdef CONFIG_MACH_HERRING
 #define NEXUS_S
