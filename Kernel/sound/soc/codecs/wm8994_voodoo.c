@@ -1,7 +1,7 @@
 /*
  * voodoo_sound.c  --  WM8994 ALSA Soc Audio driver related
  *
- *  Copyright (C) 2010 François SIMOND / twitter & XDA-developers @supercurio
+ *  Copyright (C) 2010/11 François SIMOND / twitter & XDA-developers @supercurio
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
@@ -11,17 +11,14 @@
  */
 
 #include <sound/soc.h>
-#include <sound/soc-dapm.h>
 #include <linux/delay.h>
-#include <asm/io.h>
-#include <asm/gpio.h>
-#include <plat/gpio-cfg.h>
-#include <plat/map-base.h>
-#include <mach/regs-clock.h>
-#include <mach/gpio.h>
 #include <linux/miscdevice.h>
-#include "wm8994.h"
 #include "wm8994_voodoo.h"
+#ifdef NEXUS_S
+#include "wm8994_samsung.h"
+#else
+#include "wm8994.h"
+#endif
 
 #define SUBJECT "wm8994_voodoo.c"
 #define VOODOO_SOUND_VERSION 4
@@ -254,11 +251,19 @@ void update_fll_tuning()
 
 unsigned short mono_downmix_get_value(unsigned short val)
 {
+#ifdef NEXUS_S
+	struct wm8994_priv *wm8994 = codec_->drvdata;
+#else
 	struct wm8994_priv *wm8994 = codec_->private_data;
+#endif
 	// depends on the output path in order to preserve mono downmixing
 	// on speaker
+#ifdef GALAXY_TAB
 	if (wm8994->cur_path != SPK && wm8994->cur_path != RING_SPK &&
 		wm8994->fmradio_path != FMR_SPK && wm8994->fmradio_path != FMR_SPK_MIX)
+#else
+	if (wm8994->cur_path != SPK && wm8994->cur_path != RING_SPK)
+#endif
 	{
 		if (mono_downmix)
 			val |= WM8994_AIF1DAC1_MONO;
@@ -611,14 +616,26 @@ unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int 
 {
 	// modify some registers before those being written to the codec
 
+#ifdef NEXUS_S
+	struct wm8994_priv *wm8994 = codec->drvdata;
+#else
 	struct wm8994_priv *wm8994 = codec->private_data;
+#endif
 	// be sure our pointer to codec is up to date
 	codec_ = codec;
 
 	if (! bypass_write_hook)
 	{
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
+#ifdef NEXUS_S
+		if (wm8994->cur_path == HP || wm8994->cur_path == HP_NO_MIC)
+#else
+#ifdef GALAXY_TAB
+		if (wm8994->cur_path == HP3P || wm8994->cur_path == HP4P || wm8994->fmradio_path == FMR_HP)
+#else
 		if (wm8994->cur_path == HP || wm8994->fmradio_path == FMR_HP)
+#endif
+#endif
 		{
 			if (reg == WM8994_LEFT_OUTPUT_VOLUME)
 				value = (WM8994_HPOUT1_VU | WM8994_HPOUT1L_MUTE_N | hplvol);
@@ -637,8 +654,13 @@ unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int 
 #ifdef CONFIG_SND_VOODOO_DEBUG_LOG
 	// log every write to dmesg
 	printk("Voodoo sound: wm8994_write register= [%X] value= [%X]\n", reg, value);
+#ifdef NEXUS_S
+	printk("Voodoo sound: cur_path=%i, rec_path=%i, power_state=%i\n",
+		wm8994->cur_path, wm8994->rec_path, wm8994->power_state);
+#else
 	printk("Voodoo sound: cur_path=%i, rec_path=%i, fmradio_path=%i, fmr_mix_path=%i, power_state=%i, recognition_active=%i, ringtone_active=%i\n",
 		wm8994->cur_path, wm8994->rec_path, wm8994->fmradio_path, wm8994->fmr_mix_path, wm8994->power_state, wm8994->recognition_active, wm8994->ringtone_active);
+#endif
 #endif
 	return value;
 }
@@ -646,6 +668,7 @@ unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int 
 
 void voodoo_hook_wm8994_pcm_probe(struct snd_soc_codec *codec)
 {
+	printk("Voodoo sound: driver v%d\n", VOODOO_SOUND_VERSION);
 	misc_register(&voodoo_sound_device);
 	if (sysfs_create_group(&voodoo_sound_device.this_device->kobj, &voodoo_sound_group) < 0)
 	{
