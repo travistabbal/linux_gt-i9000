@@ -68,6 +68,13 @@ static ssize_t name##_store(struct device *dev, struct device_attribute *attr, c
 }
 
 
+#ifdef NEXUS_S
+#define DECLARE_WM8994(codec) struct wm8994_priv *wm8994 = codec->drvdata;
+#else
+#define DECLARE_WM8994(codec) struct wm8994_priv *wm8994 = codec->private_data;
+#endif
+
+
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
 void update_hpvol()
 {
@@ -270,11 +277,7 @@ void update_fll_tuning(bool with_mute)
 
 unsigned short mono_downmix_get_value(unsigned short val)
 {
-#ifdef NEXUS_S
-	struct wm8994_priv *wm8994 = codec_->drvdata;
-#else
-	struct wm8994_priv *wm8994 = codec_->private_data;
-#endif
+	DECLARE_WM8994(codec_)
 	// depends on the output path in order to preserve mono downmixing
 	// on speaker
 #ifdef GALAXY_TAB
@@ -544,11 +547,8 @@ unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int 
 {
 	// modify some registers before those being written to the codec
 
-#ifdef NEXUS_S
-	struct wm8994_priv *wm8994 = codec->drvdata;
-#else
-	struct wm8994_priv *wm8994 = codec->private_data;
-#endif
+	DECLARE_WM8994(codec)
+
 	// be sure our pointer to codec is up to date
 	codec_ = codec;
 
