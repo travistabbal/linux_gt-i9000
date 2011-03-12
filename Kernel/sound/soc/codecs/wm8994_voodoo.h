@@ -20,3 +20,11 @@ void update_osr128(void);
 void update_fll_tuning(void);
 unsigned short tune_fll_value(unsigned short val);
 void update_mono_downmix(void);
+
+#ifdef CONFIG_MACH_HERRING
+#define NEXUS_S
+#endif
+
+#ifdef CONFIG_FB_S3C_AMS701KA
+#define GALAXY_TAB
+#endif
