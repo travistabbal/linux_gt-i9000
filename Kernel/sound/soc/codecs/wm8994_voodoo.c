@@ -106,6 +106,11 @@ void update_fm_radio_headset_restore_freqs(bool with_mute)
 {
 	unsigned short val;
 
+	// apply only when FM radio is active
+	DECLARE_WM8994(codec_)
+	if (wm8994->fmradio_path == FMR_OFF)
+		return;
+
 	if (with_mute)
 	{
 		wm8994_write(codec_, WM8994_AIF2_DAC_FILTERS_1, 0x236);
@@ -148,6 +153,11 @@ void update_fm_radio_headset_restore_freqs(bool with_mute)
 
 void update_fm_radio_headset_normalize_gain(bool with_mute)
 {
+	// apply only when FM radio is active
+	DECLARE_WM8994(codec_)
+	if (wm8994->fmradio_path == FMR_OFF)
+		return;
+
 	if (fm_radio_headset_normalize_gain)
 	{
 		// Bumped volume, change with Zero Cross
