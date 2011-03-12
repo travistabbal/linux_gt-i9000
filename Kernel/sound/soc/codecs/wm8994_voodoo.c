@@ -244,6 +244,41 @@ void update_recording_preset(bool with_mute)
 }
 #endif
 
+bool is_path(int unified_path)
+{
+	DECLARE_WM8994(codec_)
+
+	switch(unified_path)
+	{
+		// speaker
+		case SPEAKER:
+#ifdef GALAXY_TAB
+			if (wm8994->cur_path != SPK && wm8994->cur_path != RING_SPK &&
+				wm8994->fmradio_path != FMR_SPK && wm8994->fmradio_path != FMR_SPK_MIX)
+#else
+			if (wm8994->cur_path != SPK && wm8994->cur_path != RING_SPK)
+#endif
+				return true;
+
+		// headphones
+		// FIXME: be sure dac_direct doesn't break phone calls on TAB
+		// with these spath detection settings (HP4P)
+		case HEADPHONES:
+#ifdef NEXUS_S
+			if (wm8994->cur_path == HP || wm8994->cur_path == HP_NO_MIC)
+#else
+#ifdef GALAXY_TAB
+			if (wm8994->cur_path == HP3P || wm8994->cur_path == HP4P || wm8994->fmradio_path == FMR_HP)
+#else
+			if (wm8994->cur_path == HP || wm8994->fmradio_path == FMR_HP)
+#endif
+#endif
+				return true;
+
+	}
+	return false;
+}
+
 
 unsigned short osr128_get_value(unsigned short val)
 {
@@ -288,15 +323,9 @@ void update_fll_tuning(bool with_mute)
 
 unsigned short mono_downmix_get_value(unsigned short val)
 {
-	DECLARE_WM8994(codec_)
 	// depends on the output path in order to preserve mono downmixing
 	// on speaker
-#ifdef GALAXY_TAB
-	if (wm8994->cur_path != SPK && wm8994->cur_path != RING_SPK &&
-		wm8994->fmradio_path != FMR_SPK && wm8994->fmradio_path != FMR_SPK_MIX)
-#else
-	if (wm8994->cur_path != SPK && wm8994->cur_path != RING_SPK)
-#endif
+	if (is_path(SPEAKER))
 	{
 		if (mono_downmix)
 			val |= WM8994_AIF1DAC1_MONO;
@@ -322,10 +351,13 @@ void update_mono_downmix(bool with_mute)
 
 unsigned short dac_direct_get_value(unsigned short val)
 {
-	if (dac_direct)
-		val = (val == WM8994_DAC1L_TO_MIXOUTL) ? WM8994_DAC1L_TO_HPOUT1L : val;
-	else
-		val = (val == WM8994_DAC1L_TO_HPOUT1L) ? WM8994_DAC1L_TO_MIXOUTL : val;
+	if (is_path(HEADPHONES))
+	{
+		if (dac_direct)
+			val = (val == WM8994_DAC1L_TO_MIXOUTL) ? WM8994_DAC1L_TO_HPOUT1L : val;
+		else
+			val = (val == WM8994_DAC1L_TO_HPOUT1L) ? WM8994_DAC1L_TO_MIXOUTL : val;
+	}
 
 	return val;
 }
@@ -584,24 +616,13 @@ void voodoo_hook_playback_headset()
 unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int reg, unsigned int value)
 {
 	// modify some registers before those being written to the codec
-
-	DECLARE_WM8994(codec)
-
 	// be sure our pointer to codec is up to date
 	codec_ = codec;
 
 	if (! bypass_write_hook)
 	{
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
-#ifdef NEXUS_S
-		if (wm8994->cur_path == HP || wm8994->cur_path == HP_NO_MIC)
-#else
-#ifdef GALAXY_TAB
-		if (wm8994->cur_path == HP3P || wm8994->cur_path == HP4P || wm8994->fmradio_path == FMR_HP)
-#else
-		if (wm8994->cur_path == HP || wm8994->fmradio_path == FMR_HP)
-#endif
-#endif
+		if (is_path(HEADPHONES))
 		{
 			if (reg == WM8994_LEFT_OUTPUT_VOLUME)
 				value = (WM8994_HPOUT1_VU | WM8994_HPOUT1L_MUTE_N | hplvol);
