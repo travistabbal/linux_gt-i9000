@@ -38,6 +38,7 @@ bool fm_radio_headset_normalize_gain = true;
 
 #ifdef CONFIG_SND_VOODOO_RECORD_PRESETS
 unsigned short recording_preset = 1;
+unsigned short original_record_gain;
 #endif
 
 bool dac_osr128 = true;
@@ -192,9 +193,13 @@ void update_recording_preset(bool with_mute)
 	{
 		case 0:
 		{
+#ifdef NEXUS_S
+			printk("Voodoo sound: Nexus S original microphone gain: %X\n", original_record_gain);
+#endif
 			// Original:
-			// IN1L_VOL1=11000 (+19.5 dB)
-			wm8994_write(codec_, WM8994_LEFT_LINE_INPUT_1_2_VOLUME, 0x0118);
+			// On Galaxy S: IN1L_VOL1=11000 (+19.5 dB)
+			// On Nexus S: variable value
+			wm8994_write(codec_, WM8994_LEFT_LINE_INPUT_1_2_VOLUME, original_record_gain);
 			// DRC disabled
 			wm8994_write(codec_, WM8994_AIF1_DRC1_1, 0x0080);
 			break;
@@ -604,6 +609,8 @@ void voodoo_hook_fmradio_headset()
 #ifdef CONFIG_SND_VOODOO_RECORD_PRESETS
 void voodoo_hook_record_main_mic()
 {
+
+	original_record_gain = wm8994_read(codec_, WM8994_LEFT_LINE_INPUT_1_2_VOLUME);
 	update_recording_preset(false);
 }
 #endif

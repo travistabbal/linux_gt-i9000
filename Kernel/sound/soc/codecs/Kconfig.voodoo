@@ -25,7 +25,7 @@ config SND_VOODOO_HP_LEVEL
 	  it would introduce hiss for people not using the control app
 
 config SND_VOODOO_RECORD_PRESETS
-	bool "Microphone recording presets" if SND_ARIES_WM8994=y || SND_UNIVERSAL_WM8994=y
+	bool "Microphone recording presets"
 	depends on SND_VOODOO
 	default y
 	help
