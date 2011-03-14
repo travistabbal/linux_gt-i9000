@@ -41,6 +41,10 @@ unsigned short recording_preset = 1;
 unsigned short original_record_gain;
 #endif
 
+#ifdef NEXUS_S
+bool speaker_tuning = false;
+#endif
+
 bool dac_osr128 = true;
 bool adc_osr128 = false;
 bool fll_tuning = true;
@@ -284,6 +288,56 @@ bool is_path(int unified_path)
 	return false;
 }
 
+#ifdef NEXUS_S
+void update_speaker_tuning(bool with_mute)
+{
+	if (speaker_tuning)
+	{
+		wm8994_write(codec_, WM8994_AIF1_DRC1_3, 0x0010);
+		wm8994_write(codec_, WM8994_AIF1_DRC1_4, 0x00EB);
+
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_1,   0x041D);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_2,   0x4C00);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_A,  0x0FE3);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_B,  0x0403);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_PG, 0x0074);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_A,  0x1F03);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_B,  0xF0F9);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_C,  0x040A);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_PG, 0x03DA);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_A,  0x1ED2);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_B,  0xF11A);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_C,  0x040A);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_PG, 0x045D);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_4_A,  0x0E76);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_4_B,  0xFCE4);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_4_C,  0x040A);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_4_PG, 0x330D);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_5_A,  0xFC8F);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_5_B,  0x0400);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_5_PG, 0x323C);
+	}
+	else
+	{
+		wm8994_write(codec_, WM8994_AIF1_DRC1_3, 0x0028);
+		wm8994_write(codec_, WM8994_AIF1_DRC1_4, 0x0186);
+
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_1,   0x0019);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_2,   0x6280);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_A,  0x0FC3);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_B,  0x03FD);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_PG, 0x00F4);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_A,  0x1F30);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_B,  0xF0CD);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_C,  0x040A);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_2_PG, 0x032C);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_A,  0x1C52);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_B,  0xF379);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_C,  0x040A);
+		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_PG, 0x0DC1);
+	}
+}
+#endif
 
 unsigned short osr128_get_value(unsigned short val)
 {
@@ -405,6 +459,10 @@ static ssize_t headphone_amplifier_level_store(struct device *dev, struct device
 }
 #endif
 
+#ifdef NEXUS_S
+DECLARE_BOOL_SHOW(speaker_tuning)
+DECLARE_BOOL_STORE_UPDATE_WITH_MUTE(speaker_tuning, update_speaker_tuning, false)
+#endif
 
 #ifdef CONFIG_SND_VOODOO_FM
 DECLARE_BOOL_SHOW(fm_radio_headset_restore_bass)
@@ -534,6 +592,9 @@ static ssize_t voodoo_sound_version(struct device *dev, struct device_attribute 
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
 static DEVICE_ATTR(headphone_amplifier_level, S_IRUGO | S_IWUGO , headphone_amplifier_level_show, headphone_amplifier_level_store);
 #endif
+#ifdef NEXUS_S
+static DEVICE_ATTR(speaker_tuning, S_IRUGO | S_IWUGO , speaker_tuning_show, speaker_tuning_store);
+#endif
 #ifdef CONFIG_SND_VOODOO_FM
 static DEVICE_ATTR(fm_radio_headset_restore_bass, S_IRUGO | S_IWUGO , fm_radio_headset_restore_bass_show, fm_radio_headset_restore_bass_store);
 static DEVICE_ATTR(fm_radio_headset_restore_highs, S_IRUGO | S_IWUGO , fm_radio_headset_restore_highs_show, fm_radio_headset_restore_highs_store);
@@ -556,6 +617,9 @@ static DEVICE_ATTR(version, S_IRUGO , voodoo_sound_version, NULL);
 static struct attribute *voodoo_sound_attributes[] = {
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
 		&dev_attr_headphone_amplifier_level.attr,
+#endif
+#ifdef NEXUS_S
+		&dev_attr_speaker_tuning.attr,
 #endif
 #ifdef CONFIG_SND_VOODOO_FM
 		&dev_attr_fm_radio_headset_restore_bass.attr,
@@ -617,6 +681,13 @@ void voodoo_hook_record_main_mic()
 
 void voodoo_hook_playback_headset()
 {
+}
+
+void voodoo_hook_playback_speaker()
+{
+#ifdef NEXUS_S
+	update_speaker_tuning(false);
+#endif
 }
 
 
