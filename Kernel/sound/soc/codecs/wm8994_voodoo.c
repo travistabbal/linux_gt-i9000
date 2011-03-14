@@ -326,9 +326,11 @@ void update_speaker_tuning(bool with_mute)
 {
 	if (speaker_tuning)
 	{
+		// DRC settings
 		wm8994_write(codec_, WM8994_AIF1_DRC1_3, 0x0010);
 		wm8994_write(codec_, WM8994_AIF1_DRC1_4, 0x00EB);
 
+		// hardware EQ
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_1,   0x041D);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_2,   0x4C00);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_A,  0x0FE3);
@@ -349,12 +351,17 @@ void update_speaker_tuning(bool with_mute)
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_5_A,  0xFC8F);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_5_B,  0x0400);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_5_PG, 0x323C);
+
+		// Speaker Boost tuning
+		wm8994_write(codec_, WM8994_CLASSD,                 0x0170);
 	}
 	else
 	{
+		// DRC settings
 		wm8994_write(codec_, WM8994_AIF1_DRC1_3, 0x0028);
 		wm8994_write(codec_, WM8994_AIF1_DRC1_4, 0x0186);
 
+		// hardware EQ
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_1,   0x0019);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_GAINS_2,   0x6280);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_1_A,  0x0FC3);
@@ -368,6 +375,10 @@ void update_speaker_tuning(bool with_mute)
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_B,  0xF379);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_C,  0x040A);
 		wm8994_write(codec_, WM8994_AIF1_DAC1_EQ_BAND_3_PG, 0x0DC1);
+		wm8994_write(codec_, WM8994_CLASSD,                 0x0170);
+
+		// Speaker Boost tuning
+		wm8994_write(codec_, WM8994_CLASSD,                 0x0168);
 	}
 }
 #endif
