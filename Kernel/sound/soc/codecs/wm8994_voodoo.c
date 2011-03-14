@@ -725,9 +725,6 @@ void voodoo_hook_record_main_mic()
 }
 #endif
 
-void voodoo_hook_playback_headset()
-{
-}
 
 void voodoo_hook_playback_speaker()
 {
