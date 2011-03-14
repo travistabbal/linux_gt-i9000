@@ -717,6 +717,9 @@ void voodoo_hook_fmradio_headset()
 #ifdef CONFIG_SND_VOODOO_RECORD_PRESETS
 void voodoo_hook_record_main_mic()
 {
+	if (recording_preset == 0)
+		return;
+
 	original_record_gain = wm8994_read(codec_, WM8994_LEFT_LINE_INPUT_1_2_VOLUME);
 	update_recording_preset(false);
 }
@@ -729,6 +732,9 @@ void voodoo_hook_playback_headset()
 void voodoo_hook_playback_speaker()
 {
 #ifdef NEXUS_S
+	if (! speaker_tuning)
+		return;
+
 	update_speaker_tuning(false);
 #endif
 }
