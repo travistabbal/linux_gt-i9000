@@ -309,7 +309,11 @@ bool is_path(int unified_path)
 #ifdef GALAXY_TAB
 			if (wm8994->cur_path == HP3P || wm8994->cur_path == HP4P || wm8994->fmradio_path == FMR_HP)
 #else
+#ifdef M110S
+			if (wm8994->cur_path == HP)
+#else
 			if (wm8994->cur_path == HP || wm8994->fmradio_path == FMR_HP)
+#endif
 #endif
 #endif
 				return true;
