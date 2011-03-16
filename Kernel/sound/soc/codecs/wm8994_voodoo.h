@@ -33,4 +33,8 @@ unsigned short tune_fll_value(unsigned short val);
 #define GALAXY_TAB
 #endif
 
+#ifdef CONFIG_M110S
+#define M110S
+#endif
+
 enum unified_path { HEADPHONES, SPEAKER, MAIN_MICROPHONE };
