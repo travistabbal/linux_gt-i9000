@@ -23,6 +23,24 @@
 #define SUBJECT "wm8994_voodoo.c"
 #define VOODOO_SOUND_VERSION 6
 
+
+#ifdef MODULE
+#include "tegrak_voodoo_sound.h"
+
+// wm8994_write -> tegrak_wm8994_write for dynamic link
+#ifdef wm8994_write
+#undef wm8994_write
+#endif
+
+// wm8994_read -> tegrak_wm8994_read for dynamic link
+#ifdef wm8994_read
+#undef wm8994_read
+#endif
+#define wm8994_write(codec, reg, value) tegrak_wm8994_write(codec, reg, value)
+#define wm8994_read(codec, reg) tegrak_wm8994_read(codec, reg)
+#endif
+
+
 bool bypass_write_hook = false;
 
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
