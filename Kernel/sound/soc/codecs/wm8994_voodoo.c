@@ -115,9 +115,10 @@ void update_hpvol()
 void update_fm_radio_headset_restore_freqs(bool with_mute)
 {
 	unsigned short val;
-
-	// apply only when FM radio is active
 	DECLARE_WM8994(codec_)
+
+	bypass_write_hook = true;
+	// apply only when FM radio is active
 	if (wm8994->fmradio_path == FMR_OFF)
 		return;
 
@@ -159,12 +160,15 @@ void update_fm_radio_headset_restore_freqs(bool with_mute)
 		val &= ~(WM8994_AIF2DAC_MUTE_MASK);
 		wm8994_write(codec_, WM8994_AIF2_DAC_FILTERS_1, val);
 	}
+	bypass_write_hook = false;
 }
 
 void update_fm_radio_headset_normalize_gain(bool with_mute)
 {
-	// apply only when FM radio is active
 	DECLARE_WM8994(codec_)
+
+	bypass_write_hook = true;
+	// apply only when FM radio is active
 	if (wm8994->fmradio_path == FMR_OFF)
 		return;
 
@@ -190,6 +194,7 @@ void update_fm_radio_headset_normalize_gain(bool with_mute)
 		wm8994_write(codec_, WM8994_AIF2_DRC_5, 0x0000);
 		wm8994_write(codec_, WM8994_AIF2_DRC_1, 0x019C);
 	}
+	bypass_write_hook = false;
 }
 #endif
 
@@ -312,6 +317,22 @@ bool is_path(int unified_path)
 			return (wm8994->cur_path == HP);
 #else
 			return (wm8994->cur_path == HP || wm8994->fmradio_path == FMR_HP);
+#endif
+#endif
+#endif
+
+		// FM Radio on headphones
+		case RADIO_HEADPHONES:
+#ifdef NEXUS_S
+			return false;
+#else
+#ifdef M110S
+			return false;
+#else
+#ifdef GALAXY_TAB
+			return (wm8994->fmradio_path == FMR_HP);
+#else
+			return (wm8994->fmradio_path == FMR_HP);
 #endif
 #endif
 #endif
@@ -644,6 +665,7 @@ static ssize_t voodoo_sound_version(struct device *dev, struct device_attribute 
 }
 
 
+#ifndef MODULE
 DECLARE_BOOL_SHOW(enable)
 static ssize_t enable_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t size)
 {
@@ -660,7 +682,7 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr, c
 	}
 	return size;
 }
-
+#endif
 
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
 static DEVICE_ATTR(headphone_amplifier_level, S_IRUGO | S_IWUGO , headphone_amplifier_level_show, headphone_amplifier_level_store);
@@ -687,7 +709,9 @@ static DEVICE_ATTR(wm8994_write, S_IWUSR , NULL, store_wm8994_write);
 #endif
 static DEVICE_ATTR(version, S_IRUGO , voodoo_sound_version, NULL);
 
+#ifndef MODULE
 static DEVICE_ATTR(enable, S_IRUGO | S_IWUGO , enable_show, enable_store);
+#endif
 
 static struct attribute *voodoo_sound_attributes[] = {
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
@@ -717,29 +741,34 @@ static struct attribute *voodoo_sound_attributes[] = {
 		NULL
 };
 
+#ifndef MODULE
 static struct attribute *voodoo_sound_control_attributes[] = {
 		&dev_attr_enable.attr,
 		NULL
 };
+#endif
 
 static struct attribute_group voodoo_sound_group = {
 		.attrs  = voodoo_sound_attributes,
 };
 
+#ifndef MODULE
 static struct attribute_group voodoo_sound_control_group = {
 		.attrs  = voodoo_sound_control_attributes,
 };
+#endif
 
 static struct miscdevice voodoo_sound_device = {
 		.minor = MISC_DYNAMIC_MINOR,
 		.name = "voodoo_sound",
 };
 
+#ifndef MODULE
 static struct miscdevice voodoo_sound_control_device = {
 		.minor = MISC_DYNAMIC_MINOR,
 		.name = "voodoo_sound_control",
 };
-
+#endif
 
 void voodoo_hook_wm8994_pcm_remove() {
 	printk("Voodoo sound: removing driver v%d\n", VOODOO_SOUND_VERSION);
@@ -763,7 +792,6 @@ void update_enable()
 	else
 		voodoo_hook_wm8994_pcm_remove();
 }
-
 
 /*
  *
@@ -820,6 +848,10 @@ void voodoo_hook_playback_speaker()
 
 unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int reg, unsigned int value)
 {
+#ifdef CONFIG_SND_VOODOO_DEBUG_LOG
+	DECLARE_WM8994(codec)
+#endif
+
 	// global kill switch
 	if (! enable)
 		return value;
@@ -830,6 +862,7 @@ unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int 
 
 	if (! bypass_write_hook)
 	{
+
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
 		if (is_path(HEADPHONES))
 		{
@@ -839,6 +872,15 @@ unsigned int voodoo_hook_wm8994_write(struct snd_soc_codec *codec, unsigned int 
 				value = (WM8994_HPOUT1_VU | WM8994_HPOUT1R_MUTE_N | hprvol);
 		}
 #endif
+
+#ifdef CONFIG_SND_VOODOO_FM
+		if (is_path(RADIO_HEADPHONES))
+		{
+			if (reg == WM8994_INPUT_MIXER_2 || reg == WM8994_AIF2_DRC_1 || reg == WM8994_ANALOGUE_HP_1)
+				voodoo_hook_fmradio_headset();
+		}
+#endif
+
 		if (reg == WM8994_OVERSAMPLING)
 			value = osr128_get_value(value);
 		if (reg == WM8994_FLL1_CONTROL_4)
@@ -869,12 +911,14 @@ void voodoo_hook_wm8994_pcm_probe(struct snd_soc_codec *codec)
 	enable = true;
 	update_enable();
 
+#ifndef MODULE
 	misc_register(&voodoo_sound_control_device);
 	if (sysfs_create_group(&voodoo_sound_control_device.this_device->kobj, &voodoo_sound_control_group) < 0)
 	{
 		printk("%s sysfs_create_group fail\n", __FUNCTION__);
 		pr_err("Failed to create sysfs group for device (%s)!\n", voodoo_sound_control_device.name);
 	}
+#endif
 
 	// make a copy of the codec pointer
 	codec_ = codec;
