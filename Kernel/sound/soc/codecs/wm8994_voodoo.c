@@ -14,10 +14,19 @@
 #include <linux/delay.h>
 #include <linux/miscdevice.h>
 #include "wm8994_voodoo.h"
+
+#ifndef MODULE
 #ifdef NEXUS_S
 #include "wm8994_samsung.h"
 #else
 #include "wm8994.h"
+#endif
+#else
+#ifdef NEXUS_S
+#include "../wm8994_samsung.h"
+#else
+#include "../wm8994.h"
+#endif
 #endif
 
 #define SUBJECT "wm8994_voodoo.c"
@@ -350,7 +359,7 @@ bool is_path(int unified_path)
 #ifdef GALAXY_TAB
 			return (wm8994->codec_state & FMRADIO_ACTIVE) && (wm8994->fmradio_path == FMR_HP);
 #else
-			return (wm8994->codec_state & FMRADIO_ACTIVE) && (wm8994->fmradio_path == FMR_HP);;
+			return (wm8994->codec_state & FMRADIO_ACTIVE) && (wm8994->fmradio_path == FMR_HP);
 #endif
 #endif
 #endif
