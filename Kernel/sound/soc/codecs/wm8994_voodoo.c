@@ -820,6 +820,12 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUGO,
 		   enable_store);
 #endif
 
+#ifdef MODULE
+static DEVICE_ATTR(module, 0,
+		   NULL,
+		   NULL);
+#endif
+
 static struct attribute *voodoo_sound_attributes[] = {
 #ifdef CONFIG_SND_VOODOO_HP_LEVEL_CONTROL
 	&dev_attr_headphone_amplifier_level.attr,
@@ -843,6 +849,9 @@ static struct attribute *voodoo_sound_attributes[] = {
 #ifdef CONFIG_SND_VOODOO_DEBUG
 	&dev_attr_wm8994_register_dump.attr,
 	&dev_attr_wm8994_write.attr,
+#endif
+#ifdef MODULE
+	&dev_attr_module.attr,
 #endif
 	&dev_attr_version.attr,
 	NULL
