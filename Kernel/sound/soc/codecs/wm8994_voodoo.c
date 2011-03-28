@@ -30,7 +30,7 @@
 #endif
 
 #define SUBJECT "wm8994_voodoo.c"
-#define VOODOO_SOUND_VERSION 6
+#define VOODOO_SOUND_VERSION 7
 
 #ifdef MODULE
 #include "tegrak_voodoo_sound.h"
