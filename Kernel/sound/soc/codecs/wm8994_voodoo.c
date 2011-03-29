@@ -147,7 +147,11 @@ void update_fm_radio_headset_restore_freqs(bool with_mute)
 		return;
 
 	if (with_mute) {
-		wm8994_write(codec, WM8994_AIF2_DAC_FILTERS_1, 0x236);
+		wm8994_write(codec, WM8994_AIF2_DAC_FILTERS_1,
+			     WM8994_AIF2DAC_MUTE |
+			     WM8994_AIF2DAC_MUTERATE |
+			     WM8994_AIF2DAC_UNMUTE_RAMP |
+			     WM8994_AIF2DAC_DEEMP_MASK);
 		msleep(180);
 	}
 
@@ -157,7 +161,9 @@ void update_fm_radio_headset_restore_freqs(bool with_mute)
 		wm8994_write(codec, WM8994_SIDETONE, 0x0000);
 		// disable 4FS ultrasonic mode and
 		// restore the hi-fi <4Hz hi pass filter
-		wm8994_write(codec, WM8994_AIF2_ADC_FILTERS, 0x1800);
+		wm8994_write(codec, WM8994_AIF2_ADC_FILTERS,
+			     WM8994_AIF2ADCL_HPF |
+			     WM8994_AIF2ADCR_HPF);
 	} else {
 		// default settings in GT-I9000 Froyo XXJPX kernel sources
 		wm8994_write(codec, WM8994_SIDETONE, 0x01c0);
@@ -234,11 +240,17 @@ void update_recording_preset(bool with_mute)
 		// High sensitivy:
 		// Original - 4.5 dB, IN1L_VOL1=10101 (+15 dB)
 		wm8994_write(codec, WM8994_LEFT_LINE_INPUT_1_2_VOLUME, 0x0115);
-		wm8994_write(codec, WM8994_INPUT_MIXER_3, 0x30);
+		wm8994_write(codec, WM8994_INPUT_MIXER_3,
+			     WM8994_IN1L_TO_MIXINL |
+			     WM8994_IN1L_MIXINL_VOL);
 		// DRC Input: -6dB, Ouptut -3.75dB
 		//     Above knee 1/8, Below knee 1/2
 		//     Max gain 24 / Min gain -12
-		wm8994_write(codec, WM8994_AIF1_DRC1_1, 0x009A);
+		wm8994_write(codec, WM8994_AIF1_DRC1_1,
+			     WM8994_AIF1DRC1_SIG_DET_MODE |
+			     WM8994_AIF1DRC1_QR |
+			     WM8994_AIF1DRC1_ANTICLIP |
+			     WM8994_AIF1ADC1L_DRC_ENA);
 		wm8994_write(codec, WM8994_AIF1_DRC1_2, 0x0426);
 		wm8994_write(codec, WM8994_AIF1_DRC1_3, 0x0019);
 		wm8994_write(codec, WM8994_AIF1_DRC1_4, 0x0105);
@@ -247,11 +259,16 @@ void update_recording_preset(bool with_mute)
 		// Concert new: IN1L_VOL1=10110 (+4.5 dB)
 		// +30dB input mixer gain deactivated
 		wm8994_write(codec, WM8994_LEFT_LINE_INPUT_1_2_VOLUME, 0x010F);
-		wm8994_write(codec, WM8994_INPUT_MIXER_3, 0x20);
+		wm8994_write(codec, WM8994_INPUT_MIXER_3,
+		             WM8994_IN1L_TO_MIXINL);
 		// DRC Input: -4.5dB, Ouptut -6.75dB
 		//     Above knee 1/4, Below knee 1/2
 		//     Max gain 24 / Min gain -12
-		wm8994_write(codec, WM8994_AIF1_DRC1_1, 0x009A);
+		wm8994_write(codec, WM8994_AIF1_DRC1_1,
+			     WM8994_AIF1DRC1_SIG_DET_MODE |
+			     WM8994_AIF1DRC1_QR |
+			     WM8994_AIF1DRC1_ANTICLIP |
+			     WM8994_AIF1ADC1L_DRC_ENA);
 		wm8994_write(codec, WM8994_AIF1_DRC1_2, 0x0846);
 		wm8994_write(codec, WM8994_AIF1_DRC1_3, 0x0011);
 		wm8994_write(codec, WM8994_AIF1_DRC1_4, 0x00C9);
@@ -261,11 +278,16 @@ void update_recording_preset(bool with_mute)
 		// Original - 36 dB - 30 dB IN1L_VOL1=00000 (-16.5 dB)
 		// +30dB input mixer gain deactivated
 		wm8994_write(codec, WM8994_LEFT_LINE_INPUT_1_2_VOLUME, 0x0100);
-		wm8994_write(codec, WM8994_INPUT_MIXER_3, 0x20);
+		wm8994_write(codec, WM8994_INPUT_MIXER_3,
+		             WM8994_IN1L_TO_MIXINL);
 		// DRC Input: -7.5dB, Ouptut -6dB
 		//     Above knee 1/8, Below knee 1/4
 		//     Max gain 36 / Min gain -12
-		wm8994_write(codec, WM8994_AIF1_DRC1_1, 0x009A);
+		wm8994_write(codec, WM8994_AIF1_DRC1_1,
+			     WM8994_AIF1DRC1_SIG_DET_MODE |
+			     WM8994_AIF1DRC1_QR |
+			     WM8994_AIF1DRC1_ANTICLIP |
+			     WM8994_AIF1ADC1L_DRC_ENA);
 		wm8994_write(codec, WM8994_AIF1_DRC1_2, 0x0847);
 		wm8994_write(codec, WM8994_AIF1_DRC1_3, 0x001A);
 		wm8994_write(codec, WM8994_AIF1_DRC1_4, 0x00C9);
@@ -277,11 +299,16 @@ void update_recording_preset(bool with_mute)
 		// IN1L_VOL1=01101 (+27 dB)
 		// +30dB input mixer gain deactivated
 		wm8994_write(codec, WM8994_LEFT_LINE_INPUT_1_2_VOLUME, 0x055D);
-		wm8994_write(codec, WM8994_INPUT_MIXER_3, 0x20);
+		wm8994_write(codec, WM8994_INPUT_MIXER_3,
+		             WM8994_IN1L_TO_MIXINL);
 		// DRC Input: -18.5dB, Ouptut -9dB
 		//     Above knee 1/8, Below knee 1/2
 		//     Max gain 18 / Min gain -12
-		wm8994_write(codec, WM8994_AIF1_DRC1_1, 0x009A);
+		wm8994_write(codec, WM8994_AIF1_DRC1_1,
+			     WM8994_AIF1DRC1_SIG_DET_MODE |
+			     WM8994_AIF1DRC1_QR |
+			     WM8994_AIF1DRC1_ANTICLIP |
+			     WM8994_AIF1ADC1L_DRC_ENA);
 		wm8994_write(codec, WM8994_AIF1_DRC1_2, 0x0845);
 		wm8994_write(codec, WM8994_AIF1_DRC1_3, 0x0019);
 		wm8994_write(codec, WM8994_AIF1_DRC1_4, 0x030C);
