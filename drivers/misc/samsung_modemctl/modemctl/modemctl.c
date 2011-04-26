@@ -137,7 +137,7 @@ static int sim_get_reference_status(struct modemctl *);
 static void sim_irq_debounce_timer_func(unsigned);
 
 
-#if defined (CONFIG_TARGET_LOCALE_EUR) ||  defined (CONFIG_ARIES_EUR) || defined (CONFIG_TARGET_LOCALE_HKTW) || defined (CONFIG_TARGET_LOCALE_HKTW_FET) || defined(CONFIG_TARGET_LOCALE_VZW) || defined(CONFIG_TARGET_LOCALE_USAGSM)
+#if defined (CONFIG_TARGET_LOCALE_EUR) || defined (CONFIG_ARIES_EUR) || defined (CONFIG_MACH_VIBRANT) || defined (CONFIG_TARGET_LOCALE_HKTW) || defined (CONFIG_TARGET_LOCALE_HKTW_FET) || defined(CONFIG_TARGET_LOCALE_VZW) || defined(CONFIG_TARGET_LOCALE_USAGSM)
 static void xmm_on(struct modemctl *);
 static void xmm_off(struct modemctl *);
 static void xmm_reset(struct modemctl *);
@@ -207,7 +207,7 @@ static const struct attribute_group modemctl_group = {
 	.attrs = modemctl_attributes,
 };
 
-#if defined (CONFIG_TARGET_LOCALE_EUR) ||  defined (CONFIG_ARIES_EUR) || defined (CONFIG_TARGET_LOCALE_HKTW) || defined (CONFIG_TARGET_LOCALE_HKTW_FET) || defined (CONFIG_TARGET_LOCALE_VZW) || defined(CONFIG_TARGET_LOCALE_USAGSM)
+#if defined (CONFIG_TARGET_LOCALE_EUR) ||  defined (CONFIG_ARIES_EUR) || defined (CONFIG_MACH_VIBRANT) || defined (CONFIG_TARGET_LOCALE_HKTW) || defined (CONFIG_TARGET_LOCALE_HKTW_FET) || defined (CONFIG_TARGET_LOCALE_VZW) || defined(CONFIG_TARGET_LOCALE_USAGSM)
 /* declare mailbox init function for xmm */
 extern void onedram_init_mailbox(void);
 

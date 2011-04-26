@@ -161,6 +161,13 @@ config ARIES_EUR
 	help
 	Select S1 Europe
 
+config MACH_VIBRANT
+	bool "Vibrant"
+	depends on MACH_ARIES
+	depends on ARIES_EUR
+	help
+	Select TMobile Vibrant
+
 config ARIES_NTT
 	bool "select S1 NTT"
 	depends on MACH_ARIES

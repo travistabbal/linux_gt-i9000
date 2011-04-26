@@ -490,6 +490,11 @@ static int sec_jack_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(&pdev->dev, hi);
 
+#if defined(CONFIG_GALAXY_I897) || defined (CONFIG_MACH_VIBRANT)
+        pdata->det_active_high = 1;
+#endif
+
+
 	return 0;
 
 err_enable_irq_wake:

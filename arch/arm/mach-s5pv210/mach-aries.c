@@ -1196,6 +1196,29 @@ static void touch_keypad_onoff(int onoff)
 		msleep(25);
 }
 
+#if defined (CONFIG_MACH_VIBRANT)
+static const int touch_keypad_code[] = {
+	KEY_MENU,
+	KEY_HOME,
+	KEY_BACK,
+	KEY_SEARCH
+};
+
+static struct gpio_event_direct_entry aries_keypad_key_map[] = {
+	{
+		.gpio	= S5PV210_GPH2(6),
+		.code	= KEY_POWER,
+	},
+	{
+		.gpio	= S5PV210_GPH3(1),
+		.code	= KEY_VOLUMEDOWN,
+	},
+	{
+		.gpio	= S5PV210_GPH3(2),
+		.code	= KEY_VOLUMEUP,
+	}
+};
+#else
 static const int touch_keypad_code[] = {
 	KEY_MENU,
 	KEY_BACK,
@@ -1205,12 +1228,6 @@ static const int touch_keypad_code[] = {
 	KEY_DOWN,
 	KEY_CAMERA,
 	KEY_SEND,	
-};
-
-static struct touchkey_platform_data touchkey_data = {
-	.keycode_cnt = ARRAY_SIZE(touch_keypad_code),
-	.keycode = touch_keypad_code,
-	.touchkey_onoff = touch_keypad_onoff,
 };
 
 static struct gpio_event_direct_entry aries_keypad_key_map[] = {
@@ -1231,6 +1248,14 @@ static struct gpio_event_direct_entry aries_keypad_key_map[] = {
 		.code	= KEY_HOME,
 	}
 };
+#endif
+
+static struct touchkey_platform_data touchkey_data = {
+	.keycode_cnt = ARRAY_SIZE(touch_keypad_code),
+	.keycode = touch_keypad_code,
+	.touchkey_onoff = touch_keypad_onoff,
+};
+
 
 static struct gpio_event_input_info aries_keypad_key_info = {
 	.info.func = gpio_event_input_func,

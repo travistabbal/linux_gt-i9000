@@ -39,7 +39,7 @@
 #endif
 #include "s3cfb.h"
 
-#if defined(CONFIG_ARIES_EUR)
+#if defined(CONFIG_ARIES_EUR) || defined (CONFIG_MACH_VIBRANT)
 #include "logo_rgb24_wvga_portrait.h"
 #elif defined(CONFIG_ARIES_NTT)
 #include "logo_rgb24_wvga_portrait_docomo.h"
